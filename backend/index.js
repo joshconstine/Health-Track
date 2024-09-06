@@ -1,8 +1,26 @@
 // backend/index.js
 const express = require('express')
 const cors = require('cors')
+const mysql = require('mysql2')
 
 const app = express()
+
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "password",
+  database: "health",
+  port: 3306
+})
+
+connection.connect()
+
+connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
+  if (err) throw err
+
+  console.log('The solution is: ', rows[0].solution)
+})
+
 
 app.use(cors())
 
@@ -21,6 +39,25 @@ app.get('/', (req, res) => {
       "title":"Show Review: Alice in Borderland"
     }
   ])
+})
+
+app.get('/patients', (req, res) => {
+  try {
+  connection.query('SELECT * FROM patients', (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows)
+  })
+} catch (error) {
+  console.log(error)
+}
+
+
+})
+
+//404 page
+app.use((req, res) => {
+  res.status(404).send('404 page not found')
 })
 
 app.listen(4000, () => {

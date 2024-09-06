@@ -15,6 +15,7 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
+    
   frontend:
       build: ./frontend
       container_name: frontend_c
@@ -27,5 +28,13 @@ services:
         - '4000:4000'
       stdin_open: true
       tty: true
+      depends_on:
+        - db
+      environment:
+        - DB_HOST="db"
+        - DB_USER="root"
+        - DB_PASSWORD="password"
+        - DB_NAME="health"
+        - DB_PORT="3306"
 volumes:
       db_data:
