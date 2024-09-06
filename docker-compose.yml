@@ -15,6 +15,17 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-
+  frontend:
+      build: ./frontend
+      container_name: frontend_c
+      ports:
+        - '3000:3000'
+  backend:
+      build: ./backend
+      container_name: backend_c
+      ports:
+        - '4000:4000'
+      stdin_open: true
+      tty: true
 volumes:
-  db_data:
+      db_data:
