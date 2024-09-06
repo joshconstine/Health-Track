@@ -1,0 +1,5 @@
+CREATE TABLE patients (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    employee_id INTEGER NOT NULL
+)

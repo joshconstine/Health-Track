@@ -32,6 +32,16 @@ This may need to be ran as su
 
 from here you can have command line access into any of the containers. 
 
+## Database setup
+The first time you start the project, We will need to seed the database with the project schema.
+
+- establish a connection to the db container.
+
+- execute the /db/schema.sql file to seed the tables
+
+- executed the /db/seed/patients.sql file to insert the patients
+
+
 ## connected to db 
 once the db container is running you can can connect 
 using a range of tools
