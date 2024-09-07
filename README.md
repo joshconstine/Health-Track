@@ -1,50 +1,55 @@
 # Health-Track
 
-
 ## Team Members
 
-- Joshua Constine Project manager
-- Reuban Guillen Design manager
-- Stephen Parker Database manager
-- Anthony Corona Test manager
-- Mohamed Boughou Sofrtware developer
-- Talia Goody Requirements manager
-- Omar Bazr Requirements manager
-- Kane Cruz-Walker Software developer
+- **Joshua Constine** - Project Manager
+- **Reuban Guillen** - Design Manager
+- **Stephen Parker** - Database Manager
+- **Anthony Corona** - Test Manager
+- **Mohamed Boughou** - Software Developer
+- **Talia Goody** - Requirements Manager
+- **Omar Bazr** - Requirements Manager
+- **Kane Cruz-Walker** - Software Developer
 
 ## System Requirements
 
 - Docker installed
 
+## Architecture
 
+- **Frontend**: Bootstrapped with [Create React App](https://react.dev/)
+- **Backend**: Express application ([Express.js](https://expressjs.com/))
+- **Database**: MySQL ([MySQL Documentation](https://dev.mysql.com/doc/))
 
-## Running the project
-- clone the repo https://github.com/joshconstine/Health-Track
+### Docker Images
 
--navigate to the project via terminal and execute
+| Resource   | Image             |
+|------------|-------------------|
+| Frontend   | node:18-alpine     |
+| Backend    | node:18-alpine     |
+| Database   | mysql:8.0          |
 
-- docker-compose up
-This may need to be ran as su
-- sudo docker-compose up
+## Running the Project
 
-- open docker desktop and to verify all containers are running
-![alt text](<Screenshot 2024-09-06 at 14.54.04.png>)
+1. Clone the repo:  
+   `https://github.com/joshconstine/Health-Track`
 
-from here you can have command line access into any of the containers. 
+2. Navigate to the project directory via terminal and execute:
+   ```bash
+   docker-compose up
+- Open Docker Desktop to verify all containers are running:
+![Docker Containers Running](<Screenshot 2024-09-06 at 14.54.04.png>)
 
-## Database setup
-The first time you start the project, We will need to seed the database with the project schema.
+From here, you can have command line access into any of the containers.
 
-- establish a connection to the db container.
+## Database Setup
+The first time you start the project, you will need to seed the database with the project schema.
 
-- execute the /db/schema.sql file to seed the tables
+- Establish a connection to the `db` container.
+- Execute the `/db/schema.sql` file to seed the tables.
+- Execute the `/db/seed/patients.sql` file to insert the patient data.
 
-- executed the /db/seed/patients.sql file to insert the patients
+## Connecting to the Database
+Once the `db` container is running, you can connect using a range of tools.
 
-
-## connected to db 
-once the db container is running you can can connect 
-using a range of tools
-
-the port and admin login information can be found in the docker-compose file
-
+The port and admin login information can be found in the `docker-compose.yml` file.
