@@ -1,11 +1,22 @@
 import logo from './logo.svg';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
+
+  const [patients, setPatients] = useState([]);
+
   const fetchData = async () => {
-    const res = await fetch("http://localhost:4000/");
+    try {
+
+    const res = await fetch("http://localhost:4000/patients");
     console.log(res);
+
+    const data = await res.json();
+            setPatients(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -14,20 +25,15 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      <div>
+        {patients.map((patient) => (
+          <div key={patient.id}>
+            <h1>{patient.name}</h1>
+            <p>{patient.employee_id}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

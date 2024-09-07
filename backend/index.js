@@ -6,7 +6,7 @@ const mysql = require('mysql2')
 const app = express()
 
 const connection = mysql.createConnection({
-  host: "localhost",
+  host:  process.env.DB_HOST || "localhost",
   user: "root",
   password: "password",
   database: "health",
@@ -15,11 +15,10 @@ const connection = mysql.createConnection({
 
 connection.connect()
 
-connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
-  if (err) throw err
-
-  console.log('The solution is: ', rows[0].solution)
-})
+// connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
+//   if (err) throw err
+//   console.log('The solution is: ', rows[0].solution)
+// })
 
 
 app.use(cors())
