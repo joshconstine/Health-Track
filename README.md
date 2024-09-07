@@ -3,7 +3,7 @@
 ## Team Members
 
 - **Joshua Constine** - Project Manager
-- **Reuban Guillen** - Design Manager
+- **Ruben Guillen** - Design Manager
 - **Stephen Parker** - Database Manager
 - **Anthony Corona** - Test Manager
 - **Mohamed Boughou** - Software Developer
