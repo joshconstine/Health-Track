@@ -43,10 +43,14 @@
 From here, you can have command line access into any of the containers.
 
 ## Database Setup
+
+![alt text](image.png)
+
 The first time you start the project, you will need to seed the database with the project schema.
 
 - Establish a connection to the `db` container.
-- Execute the `/db/schema.sql` file to seed the tables.
+- Execute the `/db/schema.sql` file to create all entities and relationships.
+- Execute the `/db/seed/setup.sql` file to create add all aplication data.
 - Execute the `/db/seed/patients.sql` file to insert the patient data.
 
 ## Connecting to the Database
