@@ -166,3 +166,13 @@ INSERT INTO owned_equipment (equipment_id, date_purchased, warranty_expiration, 
 INSERT INTO equipment_maintenance (id, equipment_id, equipment_problem_type_id, equipment_status_id, resolution) VALUES
 (1, 1, 1, 2, 'Repaired mechanical failure in X-Ray Machine'),
 (2, 3, 3, 1, 'Recalibrated MRI Machine sensors');
+
+
+-- Insert Insurance Carriers
+INSERT INTO insurance_carrier (id, name,  address, carrier_status_id) VALUES
+(1, 'HealthyLife Insurance',  '123 Wellness Blvd, Cityville', 1), -- Pays on time
+(2, 'CareFirst Health',  '456 Health St, Townsville', 2), -- Late with payments
+(3, 'PremiumHealth Coverage',  '789 Insurance Ave, Villagetown', 3), -- Difficult to get payments
+(4, 'MedTrust Insurance', '101 Care Dr, MetroCity', 1), -- Pays on time
+(5, 'SafeGuard Insurance',  '202 Protect Ln, Suburbia', 2); -- Late with payments
+
