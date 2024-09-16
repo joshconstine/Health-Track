@@ -136,10 +136,10 @@ CREATE TABLE medication_warnings (
 );
 
 
-CREATE TABLE perscriptions (
+CREATE TABLE prescriptions (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     patient_id INTEGER NOT NULL,
-    perscribed_by_id INTEGER NOT NULL,
+    prescribed_by_id INTEGER NOT NULL,
     medication_id INTEGER NOT NULL,
     dosage VARCHAR(255),
     usage_frequency VARCHAR(255),
@@ -147,9 +147,9 @@ CREATE TABLE perscriptions (
 );
 
 
-CREATE TABLE filled_perscriptions (
+CREATE TABLE filled_prescriptions (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    perscription_id INTEGER NOT NULL,
+    prescription_id INTEGER NOT NULL,
     filled_by_id INTEGER NOT NULL,
     date_filled DATE NOT NULL
 
@@ -338,20 +338,20 @@ FOREIGN KEY (medication_id) REFERENCES medications(id),
 ADD CONSTRAINT fk_medication_warning_related_medication_id
 FOREIGN KEY (related_medication_id) REFERENCES medications(id);
 
--- Perscriptions
-ALTER TABLE perscriptions
-ADD CONSTRAINT fk_perscription_patient_id
+-- Prescriptions
+ALTER TABLE prescriptions
+ADD CONSTRAINT fk_prescription_patient_id
 FOREIGN KEY (patient_id) REFERENCES patients(id),
-ADD CONSTRAINT fk_perscription_perscribed_by_id
-FOREIGN KEY (perscribed_by_id) REFERENCES practitioners(id),
-ADD CONSTRAINT fk_perscription_medication_id
+ADD CONSTRAINT fk_prescription_prescribed_by_id
+FOREIGN KEY (prescribed_by_id) REFERENCES practitioners(id),
+ADD CONSTRAINT fk_prescription_medication_id
 FOREIGN KEY (medication_id) REFERENCES medications(id);
 
--- Filled Perscriptions
-ALTER TABLE filled_perscriptions
-ADD CONSTRAINT fk_filled_perscription_perscription_id
-FOREIGN KEY (perscription_id) REFERENCES perscriptions(id),
-ADD CONSTRAINT fk_filled_perscription_filled_by_id
+-- Filled Prescriptions
+ALTER TABLE filled_prescriptions
+ADD CONSTRAINT fk_filled_prescription_prescription_id
+FOREIGN KEY (prescription_id) REFERENCES prescriptions(id),
+ADD CONSTRAINT fk_filled_prescription_filled_by_id
 FOREIGN KEY (filled_by_id) REFERENCES employees(employee_id);
 
 -- Insurance Carrier
