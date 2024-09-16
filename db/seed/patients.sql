@@ -14,6 +14,14 @@ INSERT INTO medical_encounters (id, patient_id, created_by_employee_id, practiti
 (4, 4, 4, 4, '2024-09-07', 'Nausea and vomiting', 'Food poisoning', 'BP: 115/70, HR: 68', 'Food poisoning', 'Prescribed anti-nausea medication', NULL, 'Follow up if symptoms persist'),
 (5, 5, 5, 5, '2024-09-10', 'Skin rash', 'Possible allergic reaction', 'BP: 118/74, HR: 76', 'Allergic reaction', 'Prescribed antihistamines', NULL, 'Follow up in 1 week if rash persists');
 
+-- Insert Practitioner Timeblocks (For Appointments)
+INSERT INTO practitioner_timeblocks (id, practitioner_id, start_time, end_time) VALUES
+(1,  1, '2024-09-01 09:00:00', '2024-09-01 09:30:00'),
+(2,  2, '2024-09-03 10:00:00', '2024-09-03 10:30:00'),
+(3,  3, '2024-09-05 11:00:00', '2024-09-05 11:30:00'),
+(4,  4, '2024-09-07 12:00:00', '2024-09-07 12:30:00'),
+(5,  5, '2024-09-10 14:00:00', '2024-09-10 14:30:00');
+
 -- Insert Appointments
 INSERT INTO appointments (id, appointment_type_id, patient_id, practitioner_timeblock_id) VALUES
 (1, 1, 1, 1), -- Routine appointment
@@ -22,11 +30,41 @@ INSERT INTO appointments (id, appointment_type_id, patient_id, practitioner_time
 (4, 1, 4, 4), -- Routine appointment
 (5, 2, 5, 5); -- Urgent care appointment
 
--- Insert Practitioner Timeblocks (For Appointments)
-INSERT INTO practitioner_timeblocks (id, practitioner_id, appointment_id, start_time, end_time) VALUES
-(1, 1, 1, '2024-09-01 09:00:00', '2024-09-01 09:30:00'),
-(2, 2, 2, '2024-09-03 10:00:00', '2024-09-03 10:30:00'),
-(3, 3, 3, '2024-09-05 11:00:00', '2024-09-05 11:30:00'),
-(4, 4, 4, '2024-09-07 12:00:00', '2024-09-07 12:30:00'),
-(5, 5, 5, '2024-09-10 14:00:00', '2024-09-10 14:30:00');
+update practitioner_timeblocks set appointment_id = 1 where id = 1;
+update practitioner_timeblocks set appointment_id = 2 where id = 2;
+update practitioner_timeblocks set appointment_id = 3 where id = 3;
+update practitioner_timeblocks set appointment_id = 4 where id = 4;
+update practitioner_timeblocks set appointment_id = 5 where id = 5;
 
+-- Insert Provided Billable Services
+INSERT INTO provided_billable_services (id, billable_service_id, patient_id, appointment_id) VALUES
+(1, 1, 1, 1), -- X-ray for patient 1, appointment 1
+(2, 2, 1, 1), -- Physical exam for patient 1, appointment 1 (Multiple services in one appointment)
+(3, 3, 2, 2), -- TB Test for patient 2, appointment 2
+(4, 1, 2, 2), -- X-ray for patient 2, appointment 2 (Multiple services in one appointment)
+(5, 4, 3, 3), -- Routine check-up for patient 3, appointment 3
+(6, 2, 3, 3), -- Physical exam for patient 3, appointment 3 (Multiple services in one appointment)
+(7, 3, 4, 4), -- TB Test for patient 4, appointment 4
+(8, 5, 5, 5); -- Additional billable service for patient 5, appointment 5
+
+-- Insert Prescriptions
+INSERT INTO prescriptions (id, patient_id, prescribed_by_id, medication_id, dosage, usage_frequency, refill_frequency) VALUES
+(1, 1, 1, 1, '500 mg', 'Once a day', 'Monthly'), -- Prescription 1 for patient 1
+(2, 1, 1, 2, '250 mg', 'Twice a day', 'Bi-weekly'), -- Prescription 2 for patient 1 (Multiple prescriptions)
+(3, 2, 2, 3, '100 mg', 'Once a day', 'Weekly'), -- Prescription for patient 2
+(4, 3, 3, 1, '200 mg', 'Twice a day', 'Monthly'), -- Prescription for patient 3
+(5, 3, 3, 4, '50 mg', 'Once a day', 'No refill'), -- Prescription 2 for patient 3 (Multiple prescriptions)
+(6, 4, 4, 1, '500 mg', 'Once a day', 'Monthly'), -- Prescription for patient 4
+(7, 5, 5, 2, '250 mg', 'Twice a day', 'Bi-weekly'); -- Prescription for patient 5
+
+-- Insert Filled Prescriptions
+INSERT INTO filled_prescriptions (id, prescription_id, filled_by_id, date_filled) VALUES
+(1, 1, 10, '2023-01-01'), -- Filled Prescription 1 for patient 1
+(2, 1, 10, '2023-02-01'), -- Second fill for Prescription 1 for patient 1 (Multiple fills for one prescription)
+(3, 2, 11, '2023-03-01'), -- Filled Prescription 2 for patient 1
+(4, 3, 11, '2023-04-01'), -- Filled Prescription for patient 2
+(5, 4, 12, '2023-05-01'), -- Filled Prescription for patient 3
+(6, 4, 12, '2023-06-01'), -- Second fill for Prescription for patient 3 (Multiple fills)
+(7, 5, 13, '2023-07-01'), -- Filled Prescription 2 for patient 3
+(8, 6, 10, '2023-08-01'), -- Filled Prescription for patient 4
+(9, 7, 11, '2023-09-01'); -- Filled Prescription for patient 5
