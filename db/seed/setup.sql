@@ -152,7 +152,12 @@ INSERT INTO equipment (id, equipment_type_id, is_owned) VALUES
 (2, 2, TRUE), -- ER Trauma Bed (Owned)
 (3, 3, TRUE), -- MRI Machine (Owned)
 (4, 4, TRUE), -- Ultrasound Machine (Owned)
-(5, 5, TRUE); -- EKG Machine (Owned)
+(5, 5, TRUE), -- EKG Machine (Owned)
+(6, 1, FALSE), -- X-Ray Machine (Leased)
+(7, 2, FALSE), -- ER Trauma Bed (Leased)
+(8, 3, FALSE), -- MRI Machine (Leased)
+(9, 4, FALSE), -- Ultrasound Machine (Leased)
+(10, 5, FALSE); -- Ventilator (Leased)
 
 -- Owned Equipment Details
 INSERT INTO owned_equipment (equipment_id, date_purchased, warranty_expiration, warranty_description) VALUES
@@ -161,6 +166,13 @@ INSERT INTO owned_equipment (equipment_id, date_purchased, warranty_expiration, 
 (3, '2021-08-22', '2026-08-22', '5-year warranty on electronics'),
 (4, '2022-02-10', '2027-02-10', '5-year warranty on transducers'),
 (5, '2023-03-05', '2028-03-05', '5-year warranty on sensors');
+-- Insert Leased Equipment
+INSERT INTO leased_equipment (equipment_id, lease_start, lease_end, leased_from, lease_description) VALUES
+(6, '2023-01-01', '2024-01-01', 'Medical Equipment Leasing Co.', 'X-ray machine lease'),
+(7, '2023-02-01', '2024-02-01', 'HealthTech Leasing Inc.', 'ER trauma bed lease'),
+(8, '2023-03-01', '2024-03-01', 'Superior Medical Rentals', 'MRI machine lease'),
+(9, '2023-04-01', '2024-04-01', 'Medical Equipment Leasing Co.', 'Ultrasound machine lease'),
+(10, '2023-05-01', '2024-05-01', 'HealthTech Leasing Inc.', 'Ventilator lease');
 
 -- Equipment Maintenance Data
 INSERT INTO equipment_maintenance (id, equipment_id, equipment_problem_type_id, equipment_status_id, resolution) VALUES

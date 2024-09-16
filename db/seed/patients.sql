@@ -68,3 +68,26 @@ INSERT INTO filled_prescriptions (id, prescription_id, filled_by_id, date_filled
 (7, 5, 13, '2023-07-01'), -- Filled Prescription 2 for patient 3
 (8, 6, 10, '2023-08-01'), -- Filled Prescription for patient 4
 (9, 7, 11, '2023-09-01'); -- Filled Prescription for patient 5
+
+
+-- Insert Invoices
+INSERT INTO invoices (id, patient_id, insurance_carrier_id, invoice_status_id, date_sent) VALUES
+(1, 1, 1, 1, '2023-01-01'), -- Invoice for patient 1 (Paid)
+(2, 2, 2, 2, '2023-02-01'), -- Invoice for patient 2 (Overdue)
+(3, 3, 3, 3, '2023-03-01'), -- Invoice for patient 3 (Sent)
+(4, 4, 4, 1, '2023-04-01'), -- Invoice for patient 4 (Paid)
+(5, 5, 5, 2, '2023-05-01'); -- Invoice for patient 5 (Overdue)
+-- Insert Invoice Provided Billable Services
+INSERT INTO invoice_provided_billable_services (invoice_id, provided_billable_service_id) VALUES
+(1, 1), -- Provided billable service for invoice 1
+(2, 2), -- Provided billable service for invoice 2
+(3, 3), -- Provided billable service for invoice 3
+(4, 4), -- Provided billable service for invoice 4
+(5, 5); -- Provided billable service for invoice 5
+-- Insert Lab Orders
+INSERT INTO lab_orders (id, patient_id, ordered_by_physician_id, lab_test_type_id, appointment_id, lab_technician_id, measured_value, date_taken) VALUES
+(1, 1, 1, 1, 1, 1, 12.5, '2023-01-05'), -- Lab order for patient 1
+(2, 2, 2, 2, 2, 2, 15.0, '2023-02-10'), -- Lab order for patient 2
+(3, 3, 3, 3, 3, 3, 18.5, '2023-03-15'), -- Lab order for patient 3
+(4, 4, 4, 1, 4, 4, 11.5, '2023-04-20'), -- Lab order for patient 4
+(5, 5, 5, 2, 5, 5, 14.0, '2023-05-25'); -- Lab order for patient 5
