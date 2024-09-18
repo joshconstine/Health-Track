@@ -1,0 +1,132 @@
+
+<div id="chat_container" class="card  bg-white  min-w-screen-2xl max-w-screen-2xl w-screen-2xl shadow-lg  flex-2 flex-grow  p-4 text-sm font-normal">
+        
+    <div class="card-header">
+       
+    </div>
+<div class="overflow-x-auto">
+
+<div  class="flex gap-4 text-sm items-center">
+
+<span class="card-title">Snapshot of your bookings</span>
+ <div class="divider divider-horizontal"></div>
+
+
+<div class="dropdown dropdown-hover">
+<div tabindex="0" role="button" class="btn btn-ghost">
+<i class="fa-solid fa-sliders"></i>Filter
+</div>
+<ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+<li>
+<span class="menu-dropdown-toggle">Booking Status</span>
+  <ul  class="menu-dropdown menu-dropdown-show">
+    <li><a>
+        @StatusBadge(response.BookingStatusResponse{
+        ID: 1,
+        Name: "Drafted",
+})
+    </a></li>
+    <li><a>
+    @StatusBadge(response.BookingStatusResponse{
+        ID: 2,
+        Name: "Requested",
+        })
+    </a></li>
+    <li><a>
+        @StatusBadge(response.BookingStatusResponse{
+        ID: 3,
+        Name: "Confirmed",
+        })
+    </a></li>
+    <li><a>
+    @StatusBadge(response.BookingStatusResponse{
+        ID: 4,
+        Name: "In Progress",
+        })
+    </a></li>
+    <li><a>
+    @StatusBadge(response.BookingStatusResponse{
+        ID: 5,
+        Name: "Completed",
+        })
+    </a></li>
+    <li><a>
+    @StatusBadge(response.BookingStatusResponse{
+        ID: 6,
+        Name: "Cancelled",
+        })
+    </a></li>
+  </ul>
+ </li>
+</ul>
+</div>
+
+
+
+</div>
+ <div class="divider m-0 py-0"></div>
+<table class="table table-md">
+<!-- head -->
+<thead>
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Dates</th>
+    <th>Rentals</th>
+    <th>Messages</th>
+    <th>Date recieved</th>
+  </tr>
+</thead>
+<tbody>
+  <!-- row 1 -->
+            for _, booking := range Bookings {
+  <tr class="hover">
+    <td>
+        <a href={templ.SafeURL(GetPath(booking.ID, view.AuthenticatedUser(ctx).IsAccountOwnerView))} class="flex flex-col gap-0">
+        <span>
+            {booking.Name}
+        </span>
+        <span class="unerline cursor-pointer text-xs text-gray-500">
+          #{booking.ID}
+        </span>
+      </a>
+    </td>
+    <td>
+    @StatusBadge(booking.Status)
+    </td>
+    <td>{booking.StartDate.Format("01/02")}</td>
+   <td>
+         if booking.BookedEntities != nil {
+
+               for _, entity := range booking.BookedEntities {
+                // <span>{strconv.Itoa(int(entity.EntityID))}</span>
+                <span>{entity.Name}</span>
+            }
+}
+         else {
+            <span>No entities booked</span>
+
+       }
+    </td>
+
+    <td>
+    <i class="fa-solid fa-paper-plane"></i>
+    </td>
+    <td>
+        {booking.DateRecieved.Format("01/02/2006")}
+    </td>
+
+  </tr>
+}
+</tbody>
+  <tfoot>
+   <tr>
+    @Pagination(pagination, path)
+   </tr>
+  </tfoot>
+</table>
+</div>
+
+
+             
+</div>

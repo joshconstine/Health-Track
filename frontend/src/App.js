@@ -1,6 +1,6 @@
-import logo from './logo.svg';
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import Appointment from '../components/appointment';
 
 function App() {
 
@@ -10,7 +10,6 @@ function App() {
     try {
 
     const res = await fetch("http://localhost:4000/patients");
-    console.log(res);
 
     const data = await res.json();
             setPatients(data);
@@ -33,6 +32,10 @@ function App() {
             <p>{patient.employee_id}</p>
           </div>
         ))}
+
+      </div>
+      <div>
+        <Appointment />
       </div>
     </div>
   );
