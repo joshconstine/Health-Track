@@ -57,3 +57,21 @@ The first time you start the project, you will need to seed the database with th
 Once the `db` container is running, you can connect using a range of tools.
 
 The port and admin login information can be found in the `docker-compose.yml` file.
+
+
+## Rebuilding containers
+
+When working with docker, you will need to rebuild the container in order to see your changes. To rebuild a sinngle contianer use the following command
+
+
+   ```bash
+   docker-compose up -d --no-deps --build <service_name>
+   ```
+
+
+ie for the backend container
+ 
+   ```bash
+   sudo docker-compose up -d --no-deps --build backend
+   ```
+
