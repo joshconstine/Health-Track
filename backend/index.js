@@ -64,6 +64,18 @@ app.get('/insuranceCarriers', (req, res) => {
   console.log(error)
 }
 })
+
+app.get('/billableServices', (req, res) => {
+  try {
+  connection.query('select bs.id, bs.name,bs.cost from billable_services bs', (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows)
+  })
+} catch (error) {
+  console.log(error)
+}
+})
 //404 page
 app.use((req, res) => {
   res.status(404).send('404 page not found')
