@@ -50,10 +50,20 @@ app.get('/patients', (req, res) => {
 } catch (error) {
   console.log(error)
 }
-
-
 })
 
+
+app.get('/insuranceCarriers', (req, res) => {
+  try {
+  connection.query('select i.id, i.name, i.address, cs.name from insurance_carrier i join carrier_status cs on i.carrier_status_id = cs.id', (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows)
+  })
+} catch (error) {
+  console.log(error)
+}
+})
 //404 page
 app.use((req, res) => {
   res.status(404).send('404 page not found')
