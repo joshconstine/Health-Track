@@ -74,4 +74,5 @@ ie for the backend container
    ```bash
    sudo docker-compose up -d --no-deps --build backend
    ```
-
+to see changes
+docker-compose up -d --no-deps --build frontend
