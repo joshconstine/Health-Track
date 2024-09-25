@@ -5,17 +5,20 @@ import {
 const Navbar = () => {
   return (
     <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/appointments">Appointments</Link>
-          </li>
-          <li>
-            <Link to="/patients">Patients</Link>
-          </li>
-        </ul>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/appointments">Appointments</Link>
+        </li>
+        <li>
+          <Link to="/patients">Patients</Link>
+        </li>
+        <li>
+          <Link to="/orders">Lab order tracking</Link>
+        </li>
+      </ul>
 
     </nav>
   );
