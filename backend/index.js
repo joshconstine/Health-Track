@@ -41,6 +41,27 @@ app.get('/', (req, res) => {
 })
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
+app.get('/patients', (req, res) => {
+
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `SELECT * FROM patients`;
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {  // Run the SQL query
+      if (err) throw err;  // If there is an error, throw it
+
+      res.json(rows);  // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
+// This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/practitioners', (req, res) => {
 
   // Define the SQL query that selects first and last names from the employees table
