@@ -110,7 +110,7 @@ app.get('/appointments', (req, res) => {
 
 app.get('/insuranceCarriers', (req, res) => {
   try {
-  connection.query('select i.id, i.name, i.address, cs.name from insurance_carrier i join carrier_status cs on i.carrier_status_id = cs.id', (err, rows, fields) => {
+  connection.query('select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;', (err, rows, fields) => {
     if (err) throw err
 
     res.json(rows)
