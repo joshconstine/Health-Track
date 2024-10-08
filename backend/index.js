@@ -122,6 +122,18 @@ app.get('/insuranceCarriers', (req, res) => {
 }
 })
 
+app.get('/insuranceCarriers/:id', (req, res) => {
+  try {
+  connection.query(`select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`, (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows[0])
+  })
+} catch (error) {
+  console.log(error)
+}
+})
+
 app.get('/billableServices', (req, res) => {
   try {
   connection.query('select bs.id, bs.name,bs.cost from billable_services bs', (err, rows, fields) => {
