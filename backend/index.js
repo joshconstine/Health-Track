@@ -134,6 +134,31 @@ app.get('/insuranceCarriers/:id', (req, res) => {
 }
 })
 
+app.get('/insuranceCarriers/:id/invoices', (req, res) => {
+  try {
+  connection.query(`select i.id
+,i.insurance_carrier_id
+, ic.name
+,i.date_sent
+, p.first_name as patient_first_name
+, p.last_name as patient_last_name
+,i.invoice_status_id
+,invs.name
+,i.date_sent as invoice_date
+from invoices i
+join insurance_carrier ic on i.insurance_carrier_id = ic.id
+join patients p on i.patient_id = p.id
+join invoice_status invs on i.invoice_status_id = invs.id
+where ic.id =  ${req.params.id}
+`, (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows)
+  })
+} catch (error) {
+  console.log(error)
+}
+})
 app.get('/billableServices', (req, res) => {
   try {
   connection.query('select bs.id, bs.name,bs.cost from billable_services bs', (err, rows, fields) => {
