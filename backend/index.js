@@ -97,8 +97,10 @@ app.get('/practitioners', (req, res) => {
 });
 
 app.get('/appointments', (req, res) => {
+  const queryA = "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;"
+
   try {
-  connection.query('SELECT * FROM appointments', (err, rows, fields) => {
+  connection.query(queryA, (err, rows, fields) => {
     if (err) throw err
 
     res.json(rows)
