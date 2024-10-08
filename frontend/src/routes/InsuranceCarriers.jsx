@@ -1,4 +1,5 @@
 import React , {useState, useEffect} from "react";
+import { Link } from "react-router-dom";
 
 const InsuranceCarriers = () => {
 
@@ -20,7 +21,9 @@ const InsuranceCarriers = () => {
             <ul>
                 {insuranceCarriers.map((insurance) => {
                     return  <div key={insurance.id}>
-                        <h3>{insurance.name} ID: {insurance.id} </h3>
+                        <Link
+                            to={`/insuranceCarriers/${insurance.id}`}
+                        >{insurance.name} ID: {insurance.id} </Link>
                         <p>{insurance.address}</p>
                         <p>{insurance.status_name}</p>
                     </div>

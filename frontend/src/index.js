@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import { Outlet } from "react-router-dom";
 import ErrorPage from "./routes/ErrorPage";
 import InsuranceCarriers from "./routes/InsuranceCarriers";
+import InsuranceCarrier from "./routes/InsuranceCarrier";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
         path: '/insuranceCarriers',
         element: <InsuranceCarriers />
 
+      },
+      {
+        path:"/insuranceCarriers/:id",
+        element: <InsuranceCarrier  />
       }
     ],
   },
