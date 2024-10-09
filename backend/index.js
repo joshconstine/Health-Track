@@ -67,7 +67,11 @@ app.get('/medicalEncounters', (req, res) => {
 
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `select * from medical_encounters m
+  const query = `    select m.id
+    ,p.first_name
+    ,p.last_name
+    ,l.date_taken
+        from medical_encounters m
                  join patients p on m.patient_id = p.id
                  join lab_orders l on l.patient_id = p.id
                  join lab_test_types t on l.lab_test_type_id = t.id`;

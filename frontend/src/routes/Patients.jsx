@@ -1,5 +1,6 @@
 
 import React , {useState, useEffect} from "react";
+import MedicalEncounters from "../components/MedicalEncounters";
 
 const Patients = () => {
 
@@ -31,6 +32,7 @@ const Patients = () => {
 
                                    })}
             </ul>
+            <MedicalEncounters />
         </div>
     );
 }
