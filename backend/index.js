@@ -61,6 +61,32 @@ app.get('/patients', (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// This sets up an API endpoint '/practitioners' that will respond to GET requests.
+app.get('/medicalEncounters', (req, res) => {
+
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `select * from medical_encounters m
+                 join patients p on m.patient_id = p.id
+                 join lab_orders l on l.patient_id = p.id
+                 join lab_test_types t on l.lab_test_type_id = t.id`;
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {  // Run the SQL query
+      if (err) throw err;  // If there is an error, throw it
+
+      res.json(rows);  // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/practitioners', (req, res) => {
 
