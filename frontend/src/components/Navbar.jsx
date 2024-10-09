@@ -18,6 +18,9 @@ const Navbar = () => {
         <li>
           <Link to="/orders">Lab order tracking</Link>
         </li>
+        <li>
+          <Link to="/InsuranceCarriers">Insurrance Carriers</Link>
+        </li>
       </ul>
 
     </nav>

@@ -20,10 +20,10 @@ const Appointment = () => {
             <ul>
                 {appointments.map((appointment) => (
                     <div key={appointment.id}>  {/* Ensure you're using a unique key for each item */}
-                        <h3>Patient ID: {appointment.patient_id}</h3>
-                            <p>Date: {appointment.date}</p>
-                            <p>Time: {appointment.time}</p>
-                            <p>Reason: {appointment.reason}</p>
+                        <h3>Patient ID: {appointment.first_name}</h3>
+                            <p>Date: {appointment.appointment_date}</p>
+                            <p>Time: {appointment.appointment_time}</p>
+                            <p>Reason: {appointment.name}</p>
                             <p>Created At: {appointment.created_at}</p>
                     </div>
                 ))}

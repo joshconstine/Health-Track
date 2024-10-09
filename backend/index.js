@@ -123,8 +123,10 @@ app.get('/practitioners', (req, res) => {
 });
 
 app.get('/appointments', (req, res) => {
+  const queryA = "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;"
+
   try {
-  connection.query('SELECT * FROM appointments', (err, rows, fields) => {
+  connection.query(queryA, (err, rows, fields) => {
     if (err) throw err
 
     res.json(rows)
@@ -136,7 +138,7 @@ app.get('/appointments', (req, res) => {
 
 app.get('/insuranceCarriers', (req, res) => {
   try {
-  connection.query('select i.id, i.name, i.address, cs.name from insurance_carrier i join carrier_status cs on i.carrier_status_id = cs.id', (err, rows, fields) => {
+  connection.query('select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;', (err, rows, fields) => {
     if (err) throw err
 
     res.json(rows)
@@ -146,6 +148,43 @@ app.get('/insuranceCarriers', (req, res) => {
 }
 })
 
+app.get('/insuranceCarriers/:id', (req, res) => {
+  try {
+  connection.query(`select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`, (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows[0])
+  })
+} catch (error) {
+  console.log(error)
+}
+})
+
+app.get('/insuranceCarriers/:id/invoices', (req, res) => {
+  try {
+  connection.query(`select i.id
+,i.insurance_carrier_id
+, ic.name
+,i.date_sent
+, p.first_name as patient_first_name
+, p.last_name as patient_last_name
+,i.invoice_status_id
+,invs.name
+,i.date_sent as invoice_date
+from invoices i
+join insurance_carrier ic on i.insurance_carrier_id = ic.id
+join patients p on i.patient_id = p.id
+join invoice_status invs on i.invoice_status_id = invs.id
+where ic.id =  ${req.params.id}
+`, (err, rows, fields) => {
+    if (err) throw err
+
+    res.json(rows)
+  })
+} catch (error) {
+  console.log(error)
+}
+})
 app.get('/billableServices', (req, res) => {
   try {
   connection.query('select bs.id, bs.name,bs.cost from billable_services bs', (err, rows, fields) => {
