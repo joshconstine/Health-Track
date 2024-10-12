@@ -1,35 +1,29 @@
-import React , {useState, useEffect} from "react";
+import React from "react";
 
-const Appointment = () => {
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+const Appointment = () =>{
+    const params = useParams();
+    const id = params.id;
 
-    const [appointments, setAppointments] = useState([]);
+    const [appointment, setAppointment] = useState({});
 
-    const fetchAppointments = async () => {
-        const response = await fetch('http://localhost:4000/appointments');
+    const fetchAppointment = async (id) => {
+        const response = await fetch(`http://localhost:4000/appointments/${id}`);
         const data = await response.json();
-        setAppointments(data);
+        setAppointment(data);
     }
 
     useEffect(() => {
-        fetchAppointments();
+        fetchAppointment(id);
     }, []);
-
-    return (
+    return(
         <div>
-            <h1>Appointments</h1>
-            <ul>
-                {appointments.map((appointment) => (
-                    <div key={appointment.id}>  {/* Ensure you're using a unique key for each item */}
-                        <h3>Patient ID: {appointment.first_name}</h3>
-                            <p>Date: {appointment.appointment_date}</p>
-                            <p>Time: {appointment.appointment_time}</p>
-                            <p>Reason: {appointment.name}</p>
-                            <p>Created At: {appointment.created_at}</p>
-                    </div>
-                ))}
-            </ul>
+            <h1>Appointment</h1>
+            <p>{appointment.first_name}</p>
+            <p>{appointment.id}</p>
         </div>
-    );
+    )
 }
 
-export default Appointment
+export default Appointment;

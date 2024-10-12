@@ -1,4 +1,5 @@
 import React from "react";
+import Appointments from "./routes/Appointments";
 import Appointment from "./routes/Appointment";
 import Patients from "./routes/Patients";
 import LabOrder from "./routes/LabOrder"
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       },
       {
         path: "/appointments",
+        element: <Appointments />
+      },
+      {
+        path: "/appointments/:id",
         element: <Appointment />
       },
 
