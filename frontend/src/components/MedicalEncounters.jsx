@@ -21,10 +21,11 @@ const MedicalEncounters = () => {
 
         {medicalEncounters.map((medicalEncounter) => {
                     return  <div key={medicalEncounter.id}>
-                        <p>{medicalEncounter.id} </p>
+                        <p>Encounter ID: {medicalEncounter.id}</p>
                         <p>Patient: {medicalEncounter.patient_name}</p>
                         <p>Practitioner: {medicalEncounter.practitioner_name}</p>
-                        
+                        <p>Referral: {medicalEncounter.referral}</p>
+                        <br></br>
                         
                     </div>
 
