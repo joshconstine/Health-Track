@@ -1,5 +1,6 @@
 import React from 'react';
 
+import './Appointment.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 const Appointment = () => {
@@ -30,17 +31,19 @@ const Appointment = () => {
     fetchAppointment(id);
   }, []);
   return (
-    <div>
-      <h1>Appointment</h1>
-      <p>{appointment.first_name}</p>
-      <p>{appointment.id}</p>
-      <p>{appointment.last_name}</p>
-      <p>{appointment.name}</p>
-      <p>{appointment.pager_number}</p>
-      <p>{appointment.phone_number}</p>
-      <p>{appointment.start_time}</p>
-      <p>{appointment.end_time}</p>
-
+    <div className='AppointmentContainer'>
+    <div className='AppointmentBody'>
+      <div className='AppointmentDetail'>
+        <h1>Appointment {appointment.id}</h1>
+          <p>{appointment.first_name}</p>
+          <p>{appointment.last_name}</p>
+          <p>{appointment.name}</p>
+          <p>{appointment.pager_number}</p>
+          <p>{appointment.phone_number}</p>
+          <p>{appointment.start_time}</p>
+          <p>{appointment.end_time}</p>
+        </div>
+<div className='AppointmentLowerContainer'>
       <ul>
         {labOrders.map((order) => (
           <div key={order.id}>
@@ -65,6 +68,8 @@ const Appointment = () => {
           </div>
         ))}
       </ul>
+      </div>
+    </div>
     </div>
   );
 };
