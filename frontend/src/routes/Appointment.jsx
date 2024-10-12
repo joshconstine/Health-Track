@@ -22,8 +22,15 @@ const Appointment = () =>{
             <h1>Appointment</h1>
             <p>{appointment.first_name}</p>
             <p>{appointment.id}</p>
+            <p>{appointment.last_name}</p>
+            <p>{appointment.name}</p>
+            <p>{appointment.pager_number}</p>
+            <p>{appointment.phone_number}</p>
+            <p>{appointment.start_time}</p>
+            <p>{appointment.end_time}</p>
+
         </div>
     )
 }
 
-export default Appointment;
+export default Appointment; 

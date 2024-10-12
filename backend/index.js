@@ -140,6 +140,37 @@ app.get('/appointments', (req, res) => {
 }
 })
 
+app.get('/appointments/:id', (req, res) => {
+  try {
+    connection.query(`select a.id
+,p.first_name
+,p.last_name
+,at.name
+,prty.name
+,e.first_name
+,e.last_name
+,e.pager_number
+,e.phone_number
+,prt.start_time
+,prt.end_time
+,ic.name
+from appointments a
+join appointment_types at on a.appointment_type_id = at.id
+join practitioner_timeblocks prt on a.practitioner_timeblock_id = prt.id
+join practitioners pr on prt.practitioner_id = pr.id
+join employees e on pr.employee_id = e.employee_id
+join practitioner_types prty on pr.practitioner_type_id = prty.id
+join patients p on a.patient_id = p.id
+join insurance_carrier ic on p.insurance_carrier_id = ic.id
+
+where a.id = ${req.params.id}
+  `, (err, rows, fields) => {
+      res.json(rows[0])
+    })
+  } catch (error) {
+    console.log(error)
+  }
+})
 app.get('/insuranceCarriers', (req, res) => {
   try {
   connection.query('select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;', (err, rows, fields) => {
@@ -181,8 +212,6 @@ join patients p on i.patient_id = p.id
 join invoice_status invs on i.invoice_status_id = invs.id
 where ic.id =  ${req.params.id}
 `, (err, rows, fields) => {
-    if (err) throw err
-
     res.json(rows)
   })
 } catch (error) {
