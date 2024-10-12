@@ -1,58 +1,57 @@
 // backend/index.js
-const express = require('express')
-const cors = require('cors')
-const mysql = require('mysql2')
+const express = require('express');
+const cors = require('cors');
+const mysql = require('mysql2');
 
-const app = express()
+const app = express();
 
 const connection = mysql.createConnection({
-  host:  process.env.DB_HOST || "localhost",
-  user: "root",
-  password: "password",
-  database: "health",
-  port: 3306
-})
+  host: process.env.DB_HOST || 'localhost',
+  user: 'root',
+  password: 'password',
+  database: 'health',
+  port: 3306,
+});
 
-connection.connect()
+connection.connect();
 
 // connection.query('SELECT 1 + 1 AS solution', (err, rows, fields) => {
 //   if (err) throw err
 //   console.log('The solution is: ', rows[0].solution)
 // })
 
-
-app.use(cors())
+app.use(cors());
 
 app.get('/', (req, res) => {
   res.json([
     {
-      "id":"1",
-      "title":"Book Review: The Name of the Wind"
+      id: '1',
+      title: 'Book Review: The Name of the Wind',
     },
     {
-      "id":"2",
-      "title":"Game Review: Pokemon Brillian Diamond"
+      id: '2',
+      title: 'Game Review: Pokemon Brillian Diamond',
     },
     {
-      "id":"3",
-      "title":"Show Review: Alice in Borderland"
-    }
-  ])
-})
+      id: '3',
+      title: 'Show Review: Alice in Borderland',
+    },
+  ]);
+});
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/patients', (req, res) => {
-
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `SELECT * FROM patients`;
 
   // Try to run the query on the database
   try {
-    connection.query(query, (err, rows) => {  // Run the SQL query
-      if (err) throw err;  // If there is an error, throw it
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
 
-      res.json(rows);  // Send the result (rows) back to the client (your React app) in JSON format
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
     });
   } catch (error) {
     // If there's an error in running the query or connecting to the database,
@@ -64,7 +63,6 @@ app.get('/patients', (req, res) => {
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/medicalEncounters', (req, res) => {
-
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `select m.id
@@ -91,10 +89,11 @@ app.get('/medicalEncounters', (req, res) => {
 
   // Try to run the query on the database
   try {
-    connection.query(query, (err, rows) => {  // Run the SQL query
-      if (err) throw err;  // If there is an error, throw it
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
 
-      res.json(rows);  // Send the result (rows) back to the client (your React app) in JSON format
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
     });
   } catch (error) {
     // If there's an error in running the query or connecting to the database,
@@ -106,7 +105,6 @@ app.get('/medicalEncounters', (req, res) => {
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/practitioners', (req, res) => {
-
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -126,10 +124,11 @@ app.get('/practitioners', (req, res) => {
 
   // Try to run the query on the database
   try {
-    connection.query(query, (err, rows) => {  // Run the SQL query
-      if (err) throw err;  // If there is an error, throw it
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
 
-      res.json(rows);  // Send the result (rows) back to the client (your React app) in JSON format
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
     });
   } catch (error) {
     // If there's an error in running the query or connecting to the database,
@@ -140,46 +139,129 @@ app.get('/practitioners', (req, res) => {
 });
 
 app.get('/appointments', (req, res) => {
-  const queryA = "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;"
+  const queryA =
+    "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;";
 
   try {
-  connection.query(queryA, (err, rows, fields) => {
-    if (err) throw err
+    connection.query(queryA, (err, rows, fields) => {
+      if (err) throw err;
 
-    res.json(rows)
-  })
-} catch (error) {
-  console.log(error)
-}
-})
+      res.json(rows);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/appointments/:id', (req, res) => {
+  try {
+    connection.query(
+      `select a.id
+,p.first_name
+,p.last_name
+,at.name
+,prty.name
+,e.first_name
+,e.last_name
+,e.pager_number
+,e.phone_number
+,prt.start_time
+,prt.end_time
+,ic.name
+from appointments a
+join appointment_types at on a.appointment_type_id = at.id
+join practitioner_timeblocks prt on a.practitioner_timeblock_id = prt.id
+join practitioners pr on prt.practitioner_id = pr.id
+join employees e on pr.employee_id = e.employee_id
+join practitioner_types prty on pr.practitioner_type_id = prty.id
+join patients p on a.patient_id = p.id
+join insurance_carrier ic on p.insurance_carrier_id = ic.id
+
+where a.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/appointments/:id/billableServices', (req, res) => {
+  try {
+    connection.query(
+      `select bs.description
+, bs.cost
+, pbs.invoice_id
+from billable_services bs
+join provided_billable_services pbs on bs.id = pbs.billable_service_id
+where pbs.appointment_id = ${req.params.id};`,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/appointments/:id/labOrders', (req, res) => {
+  try {
+    connection.query(
+      `select ltt.name
+,ltt.lower_bound
+,ltt.upper_bound
+,lo.measured_value
+, CONCAT(e.first_name, ' ', e.last_name) as lab_technician_name
+from lab_orders lo
+join lab_test_types ltt on lo.lab_test_type_id = ltt.id
+join practitioners pr on lo.lab_technician_id = pr.id
+join employees e on pr.employee_id = e.employee_id
+where lo.appointment_id = ${req.params.id};`,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.get('/insuranceCarriers', (req, res) => {
   try {
-  connection.query('select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;', (err, rows, fields) => {
-    if (err) throw err
+    connection.query(
+      'select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;',
+      (err, rows, fields) => {
+        if (err) throw err;
 
-    res.json(rows)
-  })
-} catch (error) {
-  console.log(error)
-}
-})
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.get('/insuranceCarriers/:id', (req, res) => {
   try {
-  connection.query(`select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`, (err, rows, fields) => {
-    if (err) throw err
+    connection.query(
+      `select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`,
+      (err, rows, fields) => {
+        if (err) throw err;
 
-    res.json(rows[0])
-  })
-} catch (error) {
-  console.log(error)
-}
-})
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.get('/insuranceCarriers/:id/invoices', (req, res) => {
   try {
-  connection.query(`select i.id
+    connection.query(
+      `select i.id
 ,i.insurance_carrier_id
 , ic.name
 ,i.date_sent
@@ -193,31 +275,34 @@ join insurance_carrier ic on i.insurance_carrier_id = ic.id
 join patients p on i.patient_id = p.id
 join invoice_status invs on i.invoice_status_id = invs.id
 where ic.id =  ${req.params.id}
-`, (err, rows, fields) => {
-    if (err) throw err
-
-    res.json(rows)
-  })
-} catch (error) {
-  console.log(error)
-}
-})
+`,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 app.get('/billableServices', (req, res) => {
   try {
-  connection.query('select bs.id, bs.name,bs.cost from billable_services bs', (err, rows, fields) => {
-    if (err) throw err
+    connection.query(
+      'select bs.id, bs.name,bs.cost from billable_services bs',
+      (err, rows, fields) => {
+        if (err) throw err;
 
-    res.json(rows)
-  })
-} catch (error) {
-  console.log(error)
-}
-})
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 //404 page
 app.use((req, res) => {
-  res.status(404).send('404 page not found')
-})
+  res.status(404).send('404 page not found');
+});
 
 app.listen(4000, () => {
-  console.log('listening for requests on port 4000')
-})
+  console.log('listening for requests on port 4000');
+});
