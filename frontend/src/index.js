@@ -14,6 +14,7 @@ import { Outlet } from "react-router-dom";
 import ErrorPage from "./routes/ErrorPage";
 import InsuranceCarriers from "./routes/InsuranceCarriers";
 import InsuranceCarrier from "./routes/InsuranceCarrier";
+import './App.css';
 
 const router = createBrowserRouter([
   {
@@ -70,7 +71,7 @@ function Layout() {
       <header>
         <Navbar />
       </header>
-      <main id="detail">
+      <main >
         <Outlet />
       </main>
     </div>

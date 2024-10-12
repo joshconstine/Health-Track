@@ -21,7 +21,7 @@ const Appointment = () => {
     const labOrderData = await labOrderResponse.json();
     setOrders(labOrderData);
     const billableServicesResponse = await fetch(
-      `http://localhost:4000/appointments/${id}/labOrders`
+      `http://localhost:4000/appointments/${id}/billableServices`
     );
     const billableServicesData = await billableServicesResponse.json();
     setSerives(billableServicesData);
