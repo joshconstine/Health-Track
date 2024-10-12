@@ -67,14 +67,25 @@ app.get('/medicalEncounters', (req, res) => {
 
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `    select m.id
-    ,p.first_name
-    ,p.last_name
+  const query = `select m.id
+    ,m.practitioner_seen_id
+    ,m.patient_complaint
+    ,m.vital_signs
+    ,m.practitioner_notes
+    ,m.referral
+    ,m.recommended_follow_up
+    ,m.diagnosis
+    ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
+    ,CONCAT(e.first_name, ' ', e.last_name) as practitioner_name
     ,l.date_taken
+
+
         from medical_encounters m
                  join patients p on m.patient_id = p.id
                  join lab_orders l on l.patient_id = p.id
-                 join lab_test_types t on l.lab_test_type_id = t.id`;
+                 join lab_test_types t on l.lab_test_type_id = t.id
+                 join practitioners pr on m.practitioner_seen_id = pr.id
+                 join employees e on pr.employee_id = e.employee_id`;
 
   // Try to run the query on the database
   try {
