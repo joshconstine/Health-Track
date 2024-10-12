@@ -1,0 +1,28 @@
+.AppointmentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    color: white;
+}
+.AppointmentBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #5195C2 ;
+    padding: 10px;
+}
+.AppointmentLowerContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 20px;
+}
+ul {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+}
+
