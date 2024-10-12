@@ -91,3 +91,6 @@ INSERT INTO lab_orders (id, patient_id, ordered_by_physician_id, lab_test_type_i
 (3, 3, 3, 3, 3, 3, 18.5, '2023-03-15'), -- Lab order for patient 3
 (4, 4, 4, 1, 4, 4, 11.5, '2023-04-20'), -- Lab order for patient 4
 (5, 5, 5, 2, 5, 5, 14.0, '2023-05-25'); -- Lab order for patient 5
+
+
+UPDATE provided_billable_services SET invoice_id  = 1;
