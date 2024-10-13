@@ -43,7 +43,22 @@ app.get('/', (req, res) => {
 app.get('/patients', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `SELECT * FROM patients`;
+  const query = `
+  SELECT p.id
+  ,CONCAT(p.first_name, ' ', p.last_name) as name
+  ,p.insurance_carrier_id
+  ,ic.name as insurance_carrier
+  ,p.primary_care_physician_id
+  ,CONCAT(e.first_name, ' ', e.last_name) as primary_care_physician
+  ,p.address
+  ,p.phone_number
+  ,p.created_at
+  ,p.email
+  ,p.date_of_birth
+  from patients p
+  join  insurance_carrier ic on ic.id = p.insurance_carrier_id
+  join practitioners pr on pr.id = p.primary_care_physician_id
+  join employees e on e.employee_id = pr.employee_id;`;
 
   // Try to run the query on the database
   try {
@@ -469,6 +484,7 @@ app.get('/insuranceCarriers', (req, res) => {
   }
 });
 
+
 app.get('/insuranceCarriers/:id', (req, res) => {
   try {
     connection.query(
@@ -514,6 +530,20 @@ app.get('/billableServices', (req, res) => {
   try {
     connection.query(
       'select bs.id, bs.name,bs.cost from billable_services bs',
+      (err, rows, fields) => {
+        if (err) throw err;
+
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+app.get('/appointmentTypes', (req, res) => {
+  try {
+    connection.query(
+      'select id, name from appointment_types',
       (err, rows, fields) => {
         if (err) throw err;
 

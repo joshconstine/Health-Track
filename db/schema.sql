@@ -3,7 +3,6 @@ CREATE TABLE patients (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    employee_id INTEGER NOT NULL,
     insurance_carrier_id INTEGER NOT NULL,
     primary_care_physician_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -274,8 +273,6 @@ CREATE TABLE equipment_status (
 
 -- Patients
 ALTER TABLE patients
-ADD CONSTRAINT fk_patient_employee_id
-FOREIGN KEY (employee_id) REFERENCES employees(employee_id),
 ADD CONSTRAINT fk_patient_insurance_carrier_id
 FOREIGN KEY (insurance_carrier_id) REFERENCES insurance_carrier(id),
 ADD CONSTRAINT fk_patient_primary_care_physician_id
