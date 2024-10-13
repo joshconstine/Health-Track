@@ -11,6 +11,7 @@ const connection = mysql.createConnection({
   password: 'password',
   database: 'health',
   port: 3306,
+  multipleStatements: true,
 });
 
 connection.connect();
@@ -21,6 +22,7 @@ connection.connect();
 // })
 
 app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json([
@@ -554,6 +556,68 @@ app.get('/appointmentTypes', (req, res) => {
     console.log(error);
   }
 });
+app.post('/appointments', (req, res) => {
+  const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;
+  // {"appointment_date":"2024-10-15T16:14","appointment_type_id":"1","practitioner_id":"2","patient_id":"1"}
+
+  const dbDate = new Date(appointment_date).toISOString().slice(0, 19).replace('T', ' ');
+  const dbEndTime = new Date(new Date(appointment_date).setHours(new Date(appointment_date).getHours() + 1))
+    .toISOString().slice(0, 19).replace('T', ' ');
+
+  // Start transaction
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Transaction start error', details: err });
+    }
+
+    // Step 1: Insert into practitioner_timeblocks
+    const insertTimeblockQuery = `INSERT INTO practitioner_timeblocks (practitioner_id, start_time, end_time) VALUES (?, ?, ?)`;
+    connection.query(insertTimeblockQuery, [practitioner_id, dbDate, dbEndTime], (err, result) => {
+      if (err) {
+        return connection.rollback(() => {
+          return res.status(500).json({ error: 'Error inserting timeblock', details: err });
+        });
+      }
+
+      const practitioner_timeblock_id = result.insertId;
+
+      // Step 2: Insert into appointments
+      const insertAppointmentQuery = `INSERT INTO appointments (appointment_type_id, patient_id, practitioner_timeblock_id) VALUES (?, ?, ?)`;
+      connection.query(insertAppointmentQuery, [appointment_type_id, patient_id, practitioner_timeblock_id], (err, result) => {
+        if (err) {
+          return connection.rollback(() => {
+            return res.status(500).json({ error: 'Error inserting appointment', details: err });
+          });
+        }
+
+        const appointment_id = result.insertId;
+
+        // Step 3: Update practitioner_timeblocks with appointment_id
+        const updateTimeblockQuery = `UPDATE practitioner_timeblocks SET appointment_id = ? WHERE id = ?`;
+        connection.query(updateTimeblockQuery, [appointment_id, practitioner_timeblock_id], (err, result) => {
+          if (err) {
+            return connection.rollback(() => {
+              return res.status(500).json({ error: 'Error updating timeblock', details: err });
+            });
+          }
+
+          // Commit transaction
+          connection.commit((err) => {
+            if (err) {
+              return connection.rollback(() => {
+                return res.status(500).json({ error: 'Transaction commit error', details: err });
+              });
+            }
+
+            // Success, send response
+            res.json({ message: 'Appointment created successfully', appointment_id });
+          });
+        });
+      });
+    });
+  });
+});
+
 //404 page
 app.use((req, res) => {
   res.status(404).send('404 page not found');
