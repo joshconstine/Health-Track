@@ -15,6 +15,7 @@ import ErrorPage from "./routes/ErrorPage";
 import InsuranceCarriers from "./routes/InsuranceCarriers";
 import InsuranceCarrier from "./routes/InsuranceCarrier";
 import Practitioner from "./routes/Practitioner";
+import Practitioners from "./routes/Practitioners"; 
 import Patient from "./routes/Patient";
 import './App.css';
 
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Dashboard />
+        element: <Practitioners />
       },
       {
         path: "/appointments",
