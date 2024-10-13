@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import AppointmentTable from "../components/AppointmentTable";
+import { Link } from "react-router-dom";
+import './Appointments.css';
 const Appointments = () => {
 
     const [appointments, setAppointments] = useState([]);
@@ -16,7 +17,15 @@ const Appointments = () => {
     }, []);
     return (
         <div>
-            <h1>Appointments</h1>
+            <div className="TopContainer">
+
+                <h1>Appointments</h1>
+                <div>
+                <button >
+                    <Link to='/createAppointment'>Create Appointment</Link>
+                    </button>
+                </div>
+            </div>
             <AppointmentTable appointments={appointments} />
         </div>
     )

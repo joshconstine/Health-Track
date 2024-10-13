@@ -16,27 +16,49 @@ const Patients = () => {
     useEffect(() => {
         fetchPatients();
     }, []);
-
+   
     return (
         <div>
             <h1>Patients</h1>
-            <ul>
-                {patients.map((patient) => {
-                    return  <div key={patient.id}>
-                        <h3>
-                            <Link to={`/patients/${patient.id}`}>
-                            {patient.first_name} {patient.last_name}
-                            </Link>
-                            </h3>
-                        <p>{patient.email}</p>
-                        <p>{patient.phone_number}</p>
-                        <p>{patient.address}</p>
-                        <p>{patient.date_of_birth}</p>
-                        <p>{patient.created_at}</p>
-                    </div>
-
-                                   })}
-            </ul>
+           
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient Id</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Date of Birth</th>
+                        <th>Primary Care Physician</th>
+                        <th>Insurance Carrier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {patients.map((patient) => (
+                        <tr key={patient.id}>
+                            <td>
+                                <Link to={`/patients/${patient.id}`}>
+                                    {patient.id}
+                                </Link>
+                            </td>
+                            <td>{patient.name}</td>
+                            <td>{patient.phone_number}</td>
+                            <td>{patient.address}</td>
+                            <td>{patient.date_of_birth}</td>
+                            <td>
+                                <Link to={`/practitioners/${patient.primary_care_physician_id}`}>
+                                    {patient.primary_care_physician}
+                                </Link>
+                            </td>
+                            <td>
+                                <Link to={`/insuranceCarriers/${patient.insurance_carrier_id}`}>
+                                    {patient.insurance_carrier}
+                                </Link>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <MedicalEncounters />
         </div>
     );

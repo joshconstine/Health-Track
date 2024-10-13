@@ -11,6 +11,7 @@ const connection = mysql.createConnection({
   password: 'password',
   database: 'health',
   port: 3306,
+  multipleStatements: true,
 });
 
 connection.connect();
@@ -21,6 +22,7 @@ connection.connect();
 // })
 
 app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json([
@@ -43,7 +45,22 @@ app.get('/', (req, res) => {
 app.get('/patients', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `SELECT * FROM patients`;
+  const query = `
+  SELECT p.id
+  ,CONCAT(p.first_name, ' ', p.last_name) as name
+  ,p.insurance_carrier_id
+  ,ic.name as insurance_carrier
+  ,p.primary_care_physician_id
+  ,CONCAT(e.first_name, ' ', e.last_name) as primary_care_physician
+  ,p.address
+  ,p.phone_number
+  ,p.created_at
+  ,p.email
+  ,p.date_of_birth
+  from patients p
+  join  insurance_carrier ic on ic.id = p.insurance_carrier_id
+  join practitioners pr on pr.id = p.primary_care_physician_id
+  join employees e on e.employee_id = pr.employee_id;`;
 
   // Try to run the query on the database
   try {
@@ -469,6 +486,7 @@ app.get('/insuranceCarriers', (req, res) => {
   }
 });
 
+
 app.get('/insuranceCarriers/:id', (req, res) => {
   try {
     connection.query(
@@ -524,6 +542,82 @@ app.get('/billableServices', (req, res) => {
     console.log(error);
   }
 });
+app.get('/appointmentTypes', (req, res) => {
+  try {
+    connection.query(
+      'select id, name from appointment_types',
+      (err, rows, fields) => {
+        if (err) throw err;
+
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+app.post('/appointments', (req, res) => {
+  const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;
+  // {"appointment_date":"2024-10-15T16:14","appointment_type_id":"1","practitioner_id":"2","patient_id":"1"}
+
+  const dbDate = new Date(appointment_date).toISOString().slice(0, 19).replace('T', ' ');
+  const dbEndTime = new Date(new Date(appointment_date).setHours(new Date(appointment_date).getHours() + 1))
+    .toISOString().slice(0, 19).replace('T', ' ');
+
+  // Start transaction
+  connection.beginTransaction((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Transaction start error', details: err });
+    }
+
+    // Step 1: Insert into practitioner_timeblocks
+    const insertTimeblockQuery = `INSERT INTO practitioner_timeblocks (practitioner_id, start_time, end_time) VALUES (?, ?, ?)`;
+    connection.query(insertTimeblockQuery, [practitioner_id, dbDate, dbEndTime], (err, result) => {
+      if (err) {
+        return connection.rollback(() => {
+          return res.status(500).json({ error: 'Error inserting timeblock', details: err });
+        });
+      }
+
+      const practitioner_timeblock_id = result.insertId;
+
+      // Step 2: Insert into appointments
+      const insertAppointmentQuery = `INSERT INTO appointments (appointment_type_id, patient_id, practitioner_timeblock_id) VALUES (?, ?, ?)`;
+      connection.query(insertAppointmentQuery, [appointment_type_id, patient_id, practitioner_timeblock_id], (err, result) => {
+        if (err) {
+          return connection.rollback(() => {
+            return res.status(500).json({ error: 'Error inserting appointment', details: err });
+          });
+        }
+
+        const appointment_id = result.insertId;
+
+        // Step 3: Update practitioner_timeblocks with appointment_id
+        const updateTimeblockQuery = `UPDATE practitioner_timeblocks SET appointment_id = ? WHERE id = ?`;
+        connection.query(updateTimeblockQuery, [appointment_id, practitioner_timeblock_id], (err, result) => {
+          if (err) {
+            return connection.rollback(() => {
+              return res.status(500).json({ error: 'Error updating timeblock', details: err });
+            });
+          }
+
+          // Commit transaction
+          connection.commit((err) => {
+            if (err) {
+              return connection.rollback(() => {
+                return res.status(500).json({ error: 'Transaction commit error', details: err });
+              });
+            }
+
+            // Success, send response
+            res.json({ message: 'Appointment created successfully', appointment_id });
+          });
+        });
+      });
+    });
+  });
+});
+
 //404 page
 app.use((req, res) => {
   res.status(404).send('404 page not found');
