@@ -34,8 +34,16 @@ const Appointments = () => {
                                 {appointment.id}
                         </Link>
                                 </td>
-                            <td>{appointment.patient_name}</td>
-                            <td>{appointment.practitioner_name}</td>
+                            <td>
+                                <Link to={`/patients/${appointment.patient_id}`}>
+                                {appointment.patient_name}
+                                </Link>
+                                </td>
+                            <td>
+                                <Link to={`/practitioners/${appointment.practitioner_id}`}>
+                                {appointment.practitioner_name}
+                                </Link>
+                                </td>
                             <td>{appointment.appointment_date}</td>
                             <td>{appointment.name}</td>
                         </tr>
