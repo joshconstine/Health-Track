@@ -1,0 +1,24 @@
+table {
+    outline: 2px solid darkgray;
+    border: 0px;
+    overflow: hidden;
+    border-collapse: separate;
+    background-color: white;
+    padding: 6px;
+    border-radius: 20px;
+  }
+  
+  tr {
+    outline: 2px solid darkgray;
+  }
+  th, td {
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey for even rows */
+  }
+  
+  tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+  }
+  
