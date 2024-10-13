@@ -140,7 +140,21 @@ app.get('/practitioners', (req, res) => {
 
 app.get('/appointments', (req, res) => {
   const queryA =
-    "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;";
+`select a.id
+     , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
+     , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
+     ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
+     ,CONCAT(e.first_name, ' ', e.last_name) as practitioner_name
+     , x.name
+     , pr.id as practitioner_id
+     , p.id as patient_id
+from appointments a
+    join patients p on p.id = a.patient_id
+    join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id
+    join practitioners pr on pr.id = pt.practitioner_id
+    join employees e on e.employee_id = pr.employee_id
+    join appointment_types x on x.id = a.appointment_type_id;
+`;
 
   try {
     connection.query(queryA, (err, rows, fields) => {
