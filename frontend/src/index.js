@@ -17,6 +17,7 @@ import InsuranceCarrier from "./routes/InsuranceCarrier";
 import Practitioner from "./routes/Practitioner";
 import Practitioners from "./routes/Practitioners"; 
 import Patient from "./routes/Patient";
+import CreateAppointment from "./routes/CreateAppointment";
 import './App.css';
 
 const router = createBrowserRouter([
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "/practitioners/:id",
         element: <Practitioner />
+      },
+      {
+        path: "/createAppointment",
+        element: <CreateAppointment />
       }
     ],
   },
