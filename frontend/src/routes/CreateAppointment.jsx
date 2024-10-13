@@ -1,10 +1,12 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const CreateAppointment = () => {
     const [practitionerOptions, setPractitionerOptions] = useState([]); 
     const [patientOptions, setPatientOptions] = useState([]);
     const [appointmentTypeOptions, setAppointmentTypeOptions] = useState([]);
+    const [createdAppointmentID, setCreatedAppointmentID] = useState('');
    
     const [appointmentDate, setAppointmentDate] = useState('');
     const [appointmentType, setAppointmentType] = useState('');
@@ -41,7 +43,8 @@ const CreateAppointment = () => {
             }),
         });
         if (response.ok) {
-            alert('Appointment Created');
+            const data = await response.json();
+            setCreatedAppointmentID(data.appointment_id);
         } else {
             alert('Appointment Creation Failed');
         }
@@ -78,6 +81,9 @@ const CreateAppointment = () => {
                 </select>
                 <button type="submit">Create Appointment</button>
             </form>
+
+            {createdAppointmentID && <div><Link to={`/appointments/${createdAppointmentID}`}>
+            Appointment Created Successfully with ID: {createdAppointmentID}</Link></div>}
         </div>
     );
 }
