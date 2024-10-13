@@ -61,6 +61,99 @@ app.get('/patients', (req, res) => {
   }
 });
 
+app.get('/patients/:id', (req, res) => {
+  try {
+    connection.query(
+      `
+SELECT p.id
+    ,CONCAT(p.first_name, ' ', p.last_name) as name
+    ,p.phone_number
+    , p.address
+,p.date_of_birth
+,CONCAT(e.first_name, ' ', e.last_name) as primary_care_physician
+, pr.id as primary_care_physician_id
+, ic.name as insurance_carrier
+, ic.id as insurance_carrier_id
+
+ from patients p
+ join practitioners pr on pr.id = p.primary_care_physician_id
+    join employees e on e.employee_id = pr.employee_id
+    join insurance_carrier ic on ic.id = p.insurance_carrier_id
+
+ where p.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+// This sets up an API endpoint '/practitioners' that will respond to GET requests.
+app.get('/practitioners', (req, res) => {
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `select p.id
+,CONCAT(e.first_name, ' ', e.last_name) as name
+,e.phone_number
+,e.pager_number
+,pt.name as practitioner_type
+,ps.full_time
+from practitioners p
+join employees e on e.employee_id = p.employee_id
+join practitioner_types pt on pt.id = p.practitioner_type_id
+join employee_schedule ps on ps.employee_id = e.employee_id
+`;
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
+
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/practitioners/:id', (req, res) => {
+  try {
+    connection.query(
+      `
+
+      select p.id
+      ,CONCAT(e.first_name, ' ', e.last_name) as name
+      ,e.phone_number
+      ,e.pager_number
+      ,pt.name as practitioner_type
+      ,ps.full_time
+      ,CONCAT(ps.monday_start, ' - ', ps.monday_end) as monday
+      ,CONCAT(ps.tuesday_start, ' - ', ps.tuesday_end) as tuesday
+      ,CONCAT(ps.wednesday_start, ' - ', ps.wednesday_end) as wednesday
+      ,CONCAT(ps.thursday_start, ' - ', ps.thursday_end) as thursday
+      ,CONCAT(ps.friday_start, ' - ', ps.friday_end) as friday
+      ,CONCAT(ps.saturday_start, ' - ', ps.saturday_end) as saturday
+      ,CONCAT(ps.sunday_start, ' - ', ps.sunday_end) as sunday
+      from practitioners p
+      join employees e on e.employee_id = p.employee_id
+      join practitioner_types pt on pt.id = p.practitioner_type_id
+      join employee_schedule ps on ps.employee_id = e.employee_id
+      where p.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
@@ -140,7 +233,21 @@ app.get('/practitioners', (req, res) => {
 
 app.get('/appointments', (req, res) => {
   const queryA =
-    "select a.id, DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date, DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time, p.first_name, x.name from appointments a join patients p on p.id = a.patient_id join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id join appointment_types x on x.id = a.appointment_type_id;";
+`select a.id
+     , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
+     , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
+     ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
+     ,CONCAT(e.first_name, ' ', e.last_name) as practitioner_name
+     , x.name
+     , pr.id as practitioner_id
+     , p.id as patient_id
+from appointments a
+    join patients p on p.id = a.patient_id
+    join practitioner_timeblocks pt on pt.id = a.practitioner_timeblock_id
+    join practitioners pr on pr.id = pt.practitioner_id
+    join employees e on e.employee_id = pr.employee_id
+    join appointment_types x on x.id = a.appointment_type_id;
+`;
 
   try {
     connection.query(queryA, (err, rows, fields) => {

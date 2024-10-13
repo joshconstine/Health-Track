@@ -2,6 +2,7 @@
 import React , {useState, useEffect} from "react";
 import MedicalEncounters from "../components/MedicalEncounters";
 
+import { Link } from 'react-router-dom';
 const Patients = () => {
 
     const [patients, setPatients] = useState([]);
@@ -22,7 +23,11 @@ const Patients = () => {
             <ul>
                 {patients.map((patient) => {
                     return  <div key={patient.id}>
-                        <h3>{patient.first_name} {patient.last_name}</h3>
+                        <h3>
+                            <Link to={`/patients/${patient.id}`}>
+                            {patient.first_name} {patient.last_name}
+                            </Link>
+                            </h3>
                         <p>{patient.email}</p>
                         <p>{patient.phone_number}</p>
                         <p>{patient.address}</p>

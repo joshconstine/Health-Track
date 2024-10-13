@@ -13,27 +13,47 @@ const Appointments = () => {
     useEffect(() => {
         fetchAppointments();
     }, []);
-
     return (
         <div>
             <h1>Appointments</h1>
-            <ul>
-                {appointments.map((appointment) => (
-                    <div key={appointment.id}>  {/* Ensure you're using a unique key for each item */}
-                        <h3>Patient ID: {appointment.first_name}</h3>
-                        <Link
-                            to={`/appointments/${appointment.id}`}
-                        >{appointment.id}</Link>
-                            <p>Date: {appointment.appointment_date}</p>
-                            <p>Date: {appointment.appointment_date}</p>
-                            <p>Time: {appointment.appointment_time}</p>
-                            <p>Reason: {appointment.name}</p>
-                            <p>Created At: {appointment.created_at}</p>
-                    </div>
-                ))}
-            </ul>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Appointment Id</th>
+                        <th>Patient</th>
+                        <th>Practitioner</th>
+                        <th>Appointment Date</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {appointments.map((appointment) => (
+                        <tr key={appointment.id}>
+                            <td>
+                            <Link to={`/appointments/${appointment.id}`}>
+                                {appointment.id}
+                        </Link>
+                                </td>
+                            <td>
+                                <Link to={`/patients/${appointment.patient_id}`}>
+                                {appointment.patient_name}
+                                </Link>
+                                </td>
+                            <td>
+                                <Link to={`/practitioners/${appointment.practitioner_id}`}>
+                                {appointment.practitioner_name}
+                                </Link>
+                                </td>
+                            <td>{appointment.appointment_date}</td>
+                            <td>{appointment.name}</td>
+                        </tr>
+                    ))}
+
+                </tbody>
+            </table>
+
         </div>
-    );
+    )
 }
 
 export default Appointments
