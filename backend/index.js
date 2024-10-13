@@ -61,6 +61,35 @@ app.get('/patients', (req, res) => {
   }
 });
 
+app.get('/patients/:id', (req, res) => {
+  try {
+    connection.query(
+      `
+SELECT p.id
+    ,CONCAT(p.first_name, ' ', p.last_name) as name
+    ,p.phone_number
+    , p.address
+,p.date_of_birth
+,CONCAT(e.first_name, ' ', e.last_name) as primary_care_physician
+, pr.id as primary_care_physician_id
+, ic.name as insurance_carrier
+, ic.id as insurance_carrier_id
+
+ from patients p
+ join practitioners pr on pr.id = p.primary_care_physician_id
+    join employees e on e.employee_id = pr.employee_id
+    join insurance_carrier ic on ic.id = p.insurance_carrier_id
+
+ where p.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
