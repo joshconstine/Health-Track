@@ -13,3 +13,20 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+table {
+border: 2px solid black;
+
+}
+
+th {
+border: 2px solid black;
+padding: 10px;
+}
+
+td {
+border: 2px solid black;
+padding: 10px;
+}
+

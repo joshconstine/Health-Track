@@ -1,6 +1,7 @@
 
 import React from 'react';
 import AppointmentTable from '../components/AppointmentTable';
+import '../index.css'
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
