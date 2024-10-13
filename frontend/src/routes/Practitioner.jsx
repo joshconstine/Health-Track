@@ -1,5 +1,6 @@
 
 import React from 'react';
+import AppointmentTable from '../components/AppointmentTable';
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -9,11 +10,15 @@ const Practitioner = () => {
   const id = params.id;
 
   const [practitioner, setPractitioner] = useState({});
+  const [appointments, setAppointments] = useState([]);
 
   const fetchPractitioner = async (id) => {
     const response = await fetch(`http://localhost:4000/practitioners/${id}`);
     const data = await response.json();
     setPractitioner(data);
+    const response2 = await fetch(`http://localhost:4000/practitioners/${id}/appointments`);
+    const data2 = await response2.json();
+    setAppointments(data2);
   };
 
   useEffect(() => {
@@ -39,6 +44,7 @@ const Practitioner = () => {
             <p>Sunday: {practitioner.sunday}</p>
         </div>
     </div>
+      <AppointmentTable appointments={appointments} />
     </div>
   );
 };

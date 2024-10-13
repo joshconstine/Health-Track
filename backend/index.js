@@ -212,7 +212,6 @@ app.get('/practitioners/:id', (req, res) => {
   try {
     connection.query(
       `
-
       select p.id
       ,CONCAT(e.first_name, ' ', e.last_name) as name
       ,e.phone_number
@@ -240,6 +239,40 @@ app.get('/practitioners/:id', (req, res) => {
     console.log(error);
   }
 });
+app.get('/practitioners/:id/appointments', (req, res) => {
+  try {
+    connection.query(
+      `
+ select  a.id
+     , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
+     , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
+     ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
+     ,CONCAT(e.first_name, ' ', e.last_name) as practitioner_name
+     , x.name
+     , pr.id as practitioner_id
+     , p.id as patient_id
+from appointments a
+join appointment_types at on a.appointment_type_id = at.id
+join practitioner_timeblocks prt on a.practitioner_timeblock_id = prt.id
+join practitioners pr on prt.practitioner_id = pr.id
+join employees e on pr.employee_id = e.employee_id
+join practitioner_types prty on pr.practitioner_type_id = prty.id
+join patients p on a.patient_id = p.id
+    join practitioner_timeblocks pt on a.practitioner_timeblock_id = pt.id
+join insurance_carrier ic on p.insurance_carrier_id = ic.id
+join appointment_types x on x.id = a.appointment_type_id
+
+where pr.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
