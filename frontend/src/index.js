@@ -14,6 +14,8 @@ import { Outlet } from "react-router-dom";
 import ErrorPage from "./routes/ErrorPage";
 import InsuranceCarriers from "./routes/InsuranceCarriers";
 import InsuranceCarrier from "./routes/InsuranceCarrier";
+import Practitioner from "./routes/Practitioner";
+import Patient from "./routes/Patient";
 import './App.css';
 
 const router = createBrowserRouter([
@@ -40,6 +42,10 @@ const router = createBrowserRouter([
         element: <Patients />
       },
       {
+        path: "/patients/:id",
+        element: <Patient />
+      },
+      {
         path: '/orders',
         element: <LabOrder />
 
@@ -52,6 +58,10 @@ const router = createBrowserRouter([
       {
         path:"/insuranceCarriers/:id",
         element: <InsuranceCarrier  />
+      },
+      {
+        path: "/practitioners/:id",
+        element: <Practitioner />
       }
     ],
   },
