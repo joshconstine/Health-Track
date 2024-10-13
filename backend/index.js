@@ -90,6 +90,42 @@ SELECT p.id
     console.log(error);
   }
 });
+app.get('/patients/:id/prescriptions', (req, res) => {
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `
+select p.id
+,m.id
+,m.name
+,p.dosage
+,p.usage_frequency
+,p.refill_frequency
+,fp.date_filled
+,CONCAT(e.first_name, ' ', e.last_name) as filled_by
+,pr.id as filled_by_id  
+from prescriptions p
+join medications m on p.medication_id = m.id
+join filled_prescriptions fp on p.id = fp.prescription_id
+join employees e on e.employee_id = fp.filled_by_id
+join practitioners pr on pr.employee_id = e.employee_id
+where p.patient_id = ${req.params.id}
+                 `;
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
+
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
 app.get('/patients/:id/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
@@ -136,7 +172,25 @@ app.get('/patients/:id/medicalEncounters', (req, res) => {
 app.get('/practitioners', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = ``;
+  const query = `
+      select p.id
+      ,CONCAT(e.first_name, ' ', e.last_name) as name
+      ,e.phone_number
+      ,e.pager_number
+      ,pt.name as practitioner_type
+      ,ps.full_time
+      ,CONCAT(ps.monday_start, ' - ', ps.monday_end) as monday
+      ,CONCAT(ps.tuesday_start, ' - ', ps.tuesday_end) as tuesday
+      ,CONCAT(ps.wednesday_start, ' - ', ps.wednesday_end) as wednesday
+      ,CONCAT(ps.thursday_start, ' - ', ps.thursday_end) as thursday
+      ,CONCAT(ps.friday_start, ' - ', ps.friday_end) as friday
+      ,CONCAT(ps.saturday_start, ' - ', ps.saturday_end) as saturday
+      ,CONCAT(ps.sunday_start, ' - ', ps.sunday_end) as sunday
+      from practitioners p
+      join employees e on e.employee_id = p.employee_id
+      join practitioner_types pt on pt.id = p.practitioner_type_id
+      join employee_schedule ps on ps.employee_id = e.employee_id 
+  `;
 
   // Try to run the query on the database
   try {
