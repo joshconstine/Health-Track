@@ -90,21 +90,53 @@ SELECT p.id
     console.log(error);
   }
 });
+app.get('/patients/:id/medicalEncounters', (req, res) => {
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `select m.id
+    ,m.practitioner_seen_id
+    ,m.patient_complaint
+    ,m.vital_signs
+    ,m.practitioner_notes
+    ,m.referral
+    ,m.recommended_follow_up
+    ,m.diagnosis
+    ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
+    ,CONCAT(e.first_name, ' ', e.last_name) as practitioner_name
+    ,prt.name as practitioner_type
+    ,l.date_taken
+
+
+        from medical_encounters m
+                 join patients p on m.patient_id = p.id
+                 join lab_orders l on l.patient_id = p.id
+                 join lab_test_types t on l.lab_test_type_id = t.id
+                 join practitioners pr on m.practitioner_seen_id = pr.id
+                 join employees e on pr.employee_id = e.employee_id
+                 join practitioner_types prt on pr.practitioner_type_id = prt.id
+                  where p.id = ${req.params.id}
+                 `;
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
+
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/practitioners', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `select p.id
-,CONCAT(e.first_name, ' ', e.last_name) as name
-,e.phone_number
-,e.pager_number
-,pt.name as practitioner_type
-,ps.full_time
-from practitioners p
-join employees e on e.employee_id = p.employee_id
-join practitioner_types pt on pt.id = p.practitioner_type_id
-join employee_schedule ps on ps.employee_id = e.employee_id
-`;
+  const query = ``;
 
   // Try to run the query on the database
   try {
