@@ -90,6 +90,39 @@ SELECT p.id
     console.log(error);
   }
 });
+
+app.get('/practitioners/:id', (req, res) => {
+  try {
+    connection.query(
+      `
+
+      select p.id
+      ,CONCAT(e.first_name, ' ', e.last_name) as name
+      ,e.phone_number
+      ,e.pager_number
+      ,pt.name as practitioner_type
+      ,ps.full_time
+      ,CONCAT(ps.monday_start, ' - ', ps.monday_end) as monday
+      ,CONCAT(ps.tuesday_start, ' - ', ps.tuesday_end) as tuesday
+      ,CONCAT(ps.wednesday_start, ' - ', ps.wednesday_end) as wednesday
+      ,CONCAT(ps.thursday_start, ' - ', ps.thursday_end) as thursday
+      ,CONCAT(ps.friday_start, ' - ', ps.friday_end) as friday
+      ,CONCAT(ps.saturday_start, ' - ', ps.saturday_end) as saturday
+      ,CONCAT(ps.sunday_start, ' - ', ps.sunday_end) as sunday
+      from practitioners p
+      join employees e on e.employee_id = p.employee_id
+      join practitioner_types pt on pt.id = p.practitioner_type_id
+      join employee_schedule ps on ps.employee_id = e.employee_id
+      where p.id = ${req.params.id}
+  `,
+      (err, rows, fields) => {
+        res.json(rows[0]);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
