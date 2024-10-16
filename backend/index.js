@@ -78,6 +78,45 @@ app.get('/patients', (req, res) => {
   }
 });
 
+// This sets up an API endpoint '/practitioners' that will respond to GET requests.
+app.get('/labOrders', (req, res) => {
+  // Define the SQL query that selects first and last names from the employees table
+  // and gets their practitioner type from the practitioner_types table.
+  const query = `
+SELECT l.ID
+, ltt.name
+,l.patient_id
+,l.ordered_by_physician_id
+,l.appointment_id
+,l.lab_technician_id
+,l.measured_value
+,l.date_taken
+,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
+,CONCAT(e.first_name, ' ',e.last_name) as practitioner_name
+FROM lab_orders l
+join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
+join patients p on  p.id = l.patient_id
+join practitioners pr on pr.id = l.ordered_by_physician_id
+join employees e on pr.employee_id = e.employee_id;`
+
+
+
+  // Try to run the query on the database
+  try {
+    connection.query(query, (err, rows) => {
+      // Run the SQL query
+      if (err) throw err; // If there is an error, throw it
+
+      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+    });
+  } catch (error) {
+    // If there's an error in running the query or connecting to the database,
+    // log the error and send a 500 status (server error) to the client.
+    console.log(error);
+    res.status(500).send('Server error');
+  }
+});
+
 app.get('/patients/:id', (req, res) => {
   try {
     connection.query(
