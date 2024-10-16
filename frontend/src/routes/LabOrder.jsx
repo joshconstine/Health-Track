@@ -7,10 +7,9 @@ const LabOrder = () => {
     const [practitionerOptions, setPractitionerOptions] = useState([]); 
     //selected practitioner
     const [practitionerId, setPractitionerId] = useState('');
-    
 
     const fetchLabOrders = async () => {
-        const response = await fetch("http://localhost:4000/labOrders");
+        const response = await fetch('http://localhost:4000/labOrders');
         const data = await response.json();
         setLabOrders(data); 
         const response2 = await fetch('http://localhost:4000/practitioners');
@@ -18,9 +17,23 @@ const LabOrder = () => {
         setPractitionerOptions(data2);
     }
 
+    const fetchLabOrdersByPractitioner = async () => {
+        const response = await fetch(`http://localhost:4000/labOrders?practitioner_id=${practitionerId}`);
+        const data = await response.json();
+        setLabOrders(data);
+    }
+
+    
     React.useEffect(() => {
         fetchLabOrders();
     }, []);
+
+    React.useEffect(() => {
+        if (practitionerId) {
+            fetchLabOrdersByPractitioner();
+        }
+    }, [practitionerId]);
+
     // {
     //     "ID": 1,
     //     "name": "tb test",
