@@ -36,6 +36,7 @@ const LabOrder = () => {
                         <td>Lab Order ID</td>
                         <td>Lab Order Name</td>
                         <td>Patient</td>
+                        <td>Physician Name</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,6 +47,11 @@ const LabOrder = () => {
                             <td>
                                 <Link to={`/patients/${labOrder.patient_id}`}>
                                     {labOrder.patient_name}
+                                </Link>
+                            </td>
+                            <td>
+                                <Link to={`/practitioners/${labOrder.ordered_by_physician_id}`}>
+                                    {labOrder.practitioner_name}
                                 </Link>
                             </td>
                         </tr>
