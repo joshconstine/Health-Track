@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 const LabOrder = () => {
     const [labOrders, setLabOrders] = React.useState([]);
     //List of practitioners
-    const [practitionerOptions, setPractitionerOptions] = useState([]); 
+    const [practitionerOptions, setPractitionerOptions] = useState([]);
     //selected practitioner
     const [practitionerId, setPractitionerId] = useState('');
 
     const fetchLabOrders = async () => {
         const response = await fetch('http://localhost:4000/labOrders');
         const data = await response.json();
-        setLabOrders(data); 
+        setLabOrders(data);
         const response2 = await fetch('http://localhost:4000/practitioners');
         const data2 = await response2.json();
         setPractitionerOptions(data2);
@@ -23,7 +23,7 @@ const LabOrder = () => {
         setLabOrders(data);
     }
 
-    
+
     React.useEffect(() => {
         fetchLabOrders();
     }, []);
@@ -49,27 +49,29 @@ const LabOrder = () => {
     return (
         <div>
             <h1>Lab order tracker</h1>
-                <label htmlFor="practitionerId">Practitioner</label>
-                <select id="practitionerId" required name="practitionerId" value={practitionerId} onChange={(e) => setPractitionerId(e.target.value)}>
-                    <option value="">Select Practitioner</option>
-                    {practitionerOptions.map((practitioner) => (
-                        <option value={practitioner.id} key={practitioner.id}>{practitioner.name}</option>
-                    ))}
-                </select>
+            <label htmlFor="practitionerId">Practitioner</label>
+            <select id="practitionerId" required name="practitionerId" value={practitionerId} onChange={(e) => setPractitionerId(e.target.value)}>
+                <option value="">Select Practitioner</option>
+                {practitionerOptions.map((practitioner) => (
+                    <option value={practitioner.id} key={practitioner.id}>{practitioner.name}</option>
+                ))}
+            </select>
             <table>
                 <thead>
                     <tr>
-                        <td>Lab Order ID</td>
-                        <td>Lab Order Name</td>
-                        <td>Patient</td>
-                        <td>Physician Name</td>
+                        <th>Lab Order ID</th>
+                        <th>Patient Name</th>
+                        <th>Physician Name</th>
+                        <th>Lab Order Name</th>
+                        <th>Lab Date</th>
+                        <th>Lab Technician</th>
+                        <th>Results</th>
                     </tr>
                 </thead>
                 <tbody>
                     {labOrders.map((labOrder) => (
                         <tr key={labOrder.ID}>
                             <td>{labOrder.ID}</td>
-                            <td>{labOrder.name}</td>
                             <td>
                                 <Link to={`/patients/${labOrder.patient_id}`}>
                                     {labOrder.patient_name}
@@ -80,6 +82,10 @@ const LabOrder = () => {
                                     {labOrder.practitioner_name}
                                 </Link>
                             </td>
+                            <td>{labOrder.name}</td>
+                            <td>{labOrder.date_taken}</td>
+                            <td>{labOrder.lab_technician_id}</td>
+                            <td>{labOrder.measured_value}</td>
                         </tr>
                     ))}
                 </tbody>
