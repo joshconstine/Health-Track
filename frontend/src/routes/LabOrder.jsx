@@ -93,7 +93,7 @@ const LabOrder = () => {
                                 </Link>
                             </td>
                             <td>{labOrder.name}</td>
-                            <td>{labOrder.date_taken}</td>
+                            <td>{new Date(labOrder.date_taken).toLocaleString()}</td>
                             <td>
                                 <Link to={`/practitioners/${labOrder.lab_technician_id}`}>
                                     {labOrder.technician_name}
