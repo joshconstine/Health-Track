@@ -1,10 +1,10 @@
 -- Insert Patients
-INSERT INTO patients (id, first_name, last_name, employee_id, insurance_carrier_id, primary_care_physician_id, address, phone_number, email, date_of_birth) VALUES
-(1, 'Alice', 'Johnson', 1, 1, 1, '123 Maple St', '555-1234', 'alice.johnson@example.com', '1980-05-10'),
-(2, 'Bob', 'Smith', 2, 2, 2, '456 Oak Ave', '555-5678', 'bob.smith@example.com', '1975-09-15'),
-(3, 'Carol', 'Brown', 3, 1, 3, '789 Pine Rd', '555-8765', 'carol.brown@example.com', '1990-12-01'),
-(4, 'David', 'Williams', 4, 3, 4, '101 Elm Blvd', '555-3456', 'david.williams@example.com', '1985-04-22'),
-(5, 'Eve', 'Miller', 5, 2, 5, '202 Cedar Ln', '555-2345', 'eve.miller@example.com', '1978-07-08');
+INSERT INTO patients (id, first_name, last_name, insurance_carrier_id, primary_care_physician_id, address, phone_number, email, date_of_birth) VALUES
+(1, 'Alice', 'Johnson', 1, 1, '123 Maple St', '555-1234', 'alice.johnson@example.com', '1980-05-10'),
+(2, 'Bob', 'Smith', 2, 2, '456 Oak Ave', '555-5678', 'bob.smith@example.com', '1975-09-15'),
+(3, 'Carol', 'Brown', 1, 3, '789 Pine Rd', '555-8765', 'carol.brown@example.com', '1990-12-01'),
+(4, 'David', 'Williams', 3, 4, '101 Elm Blvd', '555-3456', 'david.williams@example.com', '1985-04-22'),
+(5, 'Eve', 'Miller', 2, 5, '202 Cedar Ln', '555-2345', 'eve.miller@example.com', '1978-07-08');
 
 -- Insert Medical Encounters
 INSERT INTO medical_encounters (id, patient_id, created_by_employee_id, practitioner_seen_id, date_of_encounter, patient_complaint, practitioner_notes, vital_signs, diagnosis, treatment_plan, referral, recommended_follow_up) VALUES
@@ -86,11 +86,15 @@ INSERT INTO invoice_provided_billable_services (invoice_id, provided_billable_se
 (5, 5); -- Provided billable service for invoice 5
 -- Insert Lab Orders
 INSERT INTO lab_orders (id, patient_id, ordered_by_physician_id, lab_test_type_id, appointment_id, lab_technician_id, measured_value, date_taken) VALUES
-(1, 1, 1, 1, 1, 1, 12.5, '2023-01-05'), -- Lab order for patient 1
-(2, 2, 2, 2, 2, 2, 15.0, '2023-02-10'), -- Lab order for patient 2
-(3, 3, 3, 3, 3, 3, 18.5, '2023-03-15'), -- Lab order for patient 3
-(4, 4, 4, 1, 4, 4, 11.5, '2023-04-20'), -- Lab order for patient 4
-(5, 5, 5, 2, 5, 5, 14.0, '2023-05-25'); -- Lab order for patient 5
-
+(1, 1, 1, 19, 1, 19, 12.5, '2023-01-05'), -- Lab order for patient 1
+(2, 2, 2, 19, 2, 20, 15.0, '2023-02-10'), -- Lab order for patient 2
+(3, 3, 3, 19, 3, 19, 18.5, '2023-03-15'), -- Lab order for patient 3
+(4, 4, 4, 20, 4, 20, 11.5, '2023-04-20'), -- Lab order for patient 4
+(5, 5, 5, 20, 5, 19, 14.0, '2023-05-25'), -- Lab order for patient 5
+(6, 1, 1, 1, 1, 19, 12.5, '2023-01-05'), -- Lab order for patient 1
+(7, 2, 2, 2, 2, 19, 15.0, '2023-02-10'), -- Lab order for patient 2
+(8, 3, 3, 3, 3, 19, 18.5, '2023-03-15'), -- Lab order for patient 3
+(9, 4, 4, 2, 4, 20, 11.5, '2023-04-20'), -- Lab order for patient 4
+(10, 5, 5, 3, 5, 20, 14.0, '2023-05-25'); -- 
 
 UPDATE provided_billable_services SET invoice_id  = 1;
