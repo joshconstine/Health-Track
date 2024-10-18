@@ -6,7 +6,7 @@ const LabOrder = () => {
     //List of practitioners
     const [practitionerOptions, setPractitionerOptions] = useState([]);
     //selected practitioner
-    const [practitionerId, setPractitionerId] = useState('');
+    const [selectedPractitionerId, setSelectedPractitionerId] = useState('');
 
     const fetchLabOrders = async () => {
         const response = await fetch('http://localhost:4000/labOrders');
@@ -18,7 +18,7 @@ const LabOrder = () => {
     }
 
     const fetchLabOrdersByPractitioner = async () => {
-        const response = await fetch(`http://localhost:4000/labOrders?practitioner_id=${practitionerId}`);
+        const response = await fetch(`http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}`);
         const data = await response.json();
         setLabOrders(data);
     }
@@ -29,10 +29,10 @@ const LabOrder = () => {
     }, []);
 
     React.useEffect(() => {
-        if (practitionerId) {
+        if (selectedPractitionerId) {
             fetchLabOrdersByPractitioner();
         }
-    }, [practitionerId]);
+    }, [selectedPractitionerId]);
 
     // {
     //     "ID": 1,
@@ -46,16 +46,26 @@ const LabOrder = () => {
     //     "patient_name": "Alice Johnson",
     //     "practitioner_name": "John Doe"
     // },
+
+    const handleResetClick = (e) => {
+        e.preventDefault()
+        setSelectedPractitionerId('')
+        fetchLabOrders()
+        console.log('just reset the selected practitioner value and will refetch all ')
+    }
     return (
         <div>
             <h1>Lab order tracker</h1>
             <label htmlFor="practitionerId">Practitioner</label>
-            <select id="practitionerId" required name="practitionerId" value={practitionerId} onChange={(e) => setPractitionerId(e.target.value)}>
+            <select id="practitionerId" required name="practitionerId" value={selectedPractitionerId} onChange={(e) => setSelectedPractitionerId(e.target.value)}>
                 <option value="">Select Practitioner</option>
                 {practitionerOptions.map((practitioner) => (
                     <option value={practitioner.id} key={practitioner.id}>{practitioner.name}</option>
                 ))}
             </select>
+            <button onClick={handleResetClick}>
+                reset
+            </button>
             <table>
                 <thead>
                     <tr>
