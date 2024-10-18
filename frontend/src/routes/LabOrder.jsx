@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const LabOrder = () => {
@@ -84,7 +84,11 @@ const LabOrder = () => {
                             </td>
                             <td>{labOrder.name}</td>
                             <td>{labOrder.date_taken}</td>
-                            <td>{labOrder.lab_technician_id}</td>
+                            <td>
+                                <Link to={`/practitioners/${labOrder.lab_technician_id}`}>
+                                    {labOrder.technician_name}
+                                </Link>
+                            </td>
                             <td>{labOrder.measured_value}</td>
                         </tr>
                     ))}
