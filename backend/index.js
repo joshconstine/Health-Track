@@ -95,35 +95,41 @@ SELECT l.ID
 ,l.measured_value
 ,l.date_taken
 ,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
-,CONCAT(e.first_name, ' ',e.last_name) as practitioner_name
+,CONCAT(orderd_by_employee.first_name, ' ',orderd_by_employee.last_name) as practitioner_name
+,CONCAT(lab_tech_employee.first_name, ' ',lab_tech_employee.last_name) as technician_name
 FROM lab_orders l
 join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
 join patients p on  p.id = l.patient_id
-join practitioners pr on pr.id = l.ordered_by_physician_id
-join employees e on pr.employee_id = e.employee_id;`
+join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
+join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
+join practitioners lab_tech on lab_tech.id = l.lab_technician_id
+join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id;`
 
-const filterdQuery = `
+  const filterdQuery = `
   SELECT l.ID
-  , ltt.name
-  ,l.patient_id
-  ,l.ordered_by_physician_id
-  ,l.appointment_id
-  ,l.lab_technician_id
-  ,l.measured_value
-  ,l.date_taken
-  ,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
-  ,CONCAT(e.first_name, ' ',e.last_name) as practitioner_name
-  FROM lab_orders l
-  join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
-  join patients p on  p.id = l.patient_id
-  join practitioners pr on pr.id = l.ordered_by_physician_id
-  join employees e on pr.employee_id = e.employee_id
+, ltt.name
+,l.patient_id
+,l.ordered_by_physician_id
+,l.appointment_id
+,l.lab_technician_id
+,l.measured_value
+,l.date_taken
+,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
+,CONCAT(orderd_by_employee.first_name, ' ',orderd_by_employee.last_name) as practitioner_name
+,CONCAT(lab_tech_employee.first_name, ' ',lab_tech_employee.last_name) as technician_name
+FROM lab_orders l
+join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
+join patients p on  p.id = l.patient_id
+join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
+join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
+join practitioners lab_tech on lab_tech.id = l.lab_technician_id
+join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id
   where l.ordered_by_physician_id = ${selectedPractitionerId}`
 
 
   // Try to run the query on the database
   try {
-    connection.query(selectedPractitionerId ? filterdQuery :query, (err, rows) => {
+    connection.query(selectedPractitionerId ? filterdQuery : query, (err, rows) => {
       // Run the SQL query
       if (err) throw err; // If there is an error, throw it
 
@@ -411,13 +417,13 @@ app.get('/practitioners', (req, res) => {
   `;
   // Try to run the query on the database
   try {
-    connection.query(  query, (err, rows) => {
+    connection.query(query, (err, rows) => {
       // Run the SQL query
       if (err) throw err; // If there is an error, throw it
 
       res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
     });
-    } catch (error) {
+  } catch (error) {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
@@ -427,7 +433,7 @@ app.get('/practitioners', (req, res) => {
 
 app.get('/appointments', (req, res) => {
   const queryA =
-`select a.id
+    `select a.id
      , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
      , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
      ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
