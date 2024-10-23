@@ -255,12 +255,15 @@ app.get('/practitioners', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
-      select p.id
+    select p.id
       ,CONCAT(e.first_name, ' ', e.last_name) as name
       ,e.phone_number
       ,e.pager_number
       ,pt.name as practitioner_type
-      ,ps.full_time
+     , CASE
+        WHEN ps.full_time = 1 THEN 'Full Time'
+        ELSE 'Part Time'
+        END as full_time
       ,CONCAT(ps.monday_start, ' - ', ps.monday_end) as monday
       ,CONCAT(ps.tuesday_start, ' - ', ps.tuesday_end) as tuesday
       ,CONCAT(ps.wednesday_start, ' - ', ps.wednesday_end) as wednesday
@@ -271,7 +274,7 @@ app.get('/practitioners', (req, res) => {
       from practitioners p
       join employees e on e.employee_id = p.employee_id
       join practitioner_types pt on pt.id = p.practitioner_type_id
-      join employee_schedule ps on ps.employee_id = e.employee_id 
+      join employee_schedule ps on ps.employee_id = e.employee_id
   `;
 
   // Try to run the query on the database
