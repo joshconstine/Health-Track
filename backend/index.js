@@ -620,25 +620,67 @@ app.get('/appointmentTypes', (req, res) => {
     console.log(error);
   }
 });
+const checkForTimeblockOverlap = (existingTimeblocks, newStartTime, newEndTime) => {
+    existingTimeblocks.forEach((timeblock) => {
+    const existingStartTime = new Date(timeblock.start_time)
+    const existingEndTime = new Date(timeblock.end_time);
+
+
+    const newStartTimeUTC = newStartTime.toISOString().slice(0, 19).replace('T', ' ');
+    const newEndTimeUTC = newEndTime.toISOString().slice(0, 19).replace('T', ' ');
+
+    newStartTime = new Date(newStartTimeUTC);
+    newEndTime = new Date(newEndTimeUTC);
+
+    
+
+       console.log('comparing timeblocks', newStartTime, newEndTime, existingStartTime, existingEndTime);
+
+
+    if (newStartTime >= existingStartTime && newStartTime < existingEndTime) {
+      return true;
+    }
+
+    if (newEndTime > existingStartTime && newEndTime <= existingEndTime) {
+      return true;
+    }
+})
+  return false;
+}
+
 app.post('/appointments', (req, res) => {
   const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;
   // {"appointment_date":"2024-10-15T16:14","appointment_type_id":"1","practitioner_id":"2","patient_id":"1"}
 
-  const dbDate = new Date(appointment_date).toISOString().slice(0, 19).replace('T', ' ');
-  const dbEndTime = new Date(new Date(appointment_date).setHours(new Date(appointment_date).getHours() + 1))
-    .toISOString().slice(0, 19).replace('T', ' ');
-
+  const existingPractitionerTimeblocksQuery = `SELECT * FROM practitioner_timeblocks WHERE practitioner_id = ?`;
   // Start transaction
   connection.beginTransaction((err) => {
     if (err) {
       return res.status(500).json({ error: 'Transaction start error', details: err });
     }
-
+    
+    connection.query(existingPractitionerTimeblocksQuery, [practitioner_id], (err, existingTimeblocks) => {
+      if (err) {
+        return res.status(500).json({ error: 'Error fetching existing timeblocks', details: err });
+      }
+      
+      const newStartTime = new Date(appointment_date);
+      const newEndTime = new Date(new Date(appointment_date).setHours(new Date(appointment_date).getHours() + 1));
+      
+      console.log(existingTimeblocks);
+      if (checkForTimeblockOverlap(existingTimeblocks, newStartTime, newEndTime)) {
+        return res.status(400).json({ error: 'Timeblock overlap', details: 'Practitioner already has an appointment at this time' });
+      }
+    const dbDate = new Date(appointment_date).toISOString().slice(0, 19).replace('T', ' ')
+    const dbEndTime = new Date(new Date(appointment_date).setHours(new Date(appointment_date).getHours() + 1))
+      .toISOString().slice(0, 19).replace('T', ' ')
+  
     // Step 1: Insert into practitioner_timeblocks
     const insertTimeblockQuery = `INSERT INTO practitioner_timeblocks (practitioner_id, start_time, end_time) VALUES (?, ?, ?)`;
     connection.query(insertTimeblockQuery, [practitioner_id, dbDate, dbEndTime], (err, result) => {
       if (err) {
         return connection.rollback(() => {
+          console.log('error', err);
           return res.status(500).json({ error: 'Error inserting timeblock', details: err });
         });
       }
@@ -650,6 +692,7 @@ app.post('/appointments', (req, res) => {
       connection.query(insertAppointmentQuery, [appointment_type_id, patient_id, practitioner_timeblock_id], (err, result) => {
         if (err) {
           return connection.rollback(() => {
+          console.log('error', err);
             return res.status(500).json({ error: 'Error inserting appointment', details: err });
           });
         }
@@ -661,6 +704,7 @@ app.post('/appointments', (req, res) => {
         connection.query(updateTimeblockQuery, [appointment_id, practitioner_timeblock_id], (err, result) => {
           if (err) {
             return connection.rollback(() => {
+          console.log('error', err);
               return res.status(500).json({ error: 'Error updating timeblock', details: err });
             });
           }
@@ -669,6 +713,7 @@ app.post('/appointments', (req, res) => {
           connection.commit((err) => {
             if (err) {
               return connection.rollback(() => {
+          console.log('error', err);
                 return res.status(500).json({ error: 'Transaction commit error', details: err });
               });
             }
@@ -678,6 +723,7 @@ app.post('/appointments', (req, res) => {
           });
         });
       });
+  });
     });
   });
 });
