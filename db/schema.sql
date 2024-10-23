@@ -9,7 +9,8 @@ CREATE TABLE patients (
     address VARCHAR(255) NOT NULL,
     phone_number VARCHAR(15) NOT NULL,
     email VARCHAR(50) NOT NULL,
-    date_of_birth DATE NOT NULL
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(20) NOT NULL,
 );
 
 CREATE TABLE medical_encounters (

@@ -31,6 +31,7 @@ const Patients = () => {
                         <th>Date of Birth</th>
                         <th>Primary Care Physician</th>
                         <th>Insurance Carrier</th>
+                        <th>Gender</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,6 +55,9 @@ const Patients = () => {
                                 <Link to={`/insuranceCarriers/${patient.insurance_carrier_id}`}>
                                     {patient.insurance_carrier}
                                 </Link>
+                            </td>
+                            <td>
+                                {patient.gender}
                             </td>
                         </tr>
                     ))}

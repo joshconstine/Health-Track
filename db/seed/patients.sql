@@ -1,10 +1,10 @@
 -- Insert Patients
-INSERT INTO patients (id, first_name, last_name, insurance_carrier_id, primary_care_physician_id, address, phone_number, email, date_of_birth) VALUES
-(1, 'Alice', 'Johnson', 1, 1, '123 Maple St', '555-1234', 'alice.johnson@example.com', '1980-05-10'),
-(2, 'Bob', 'Smith', 2, 2, '456 Oak Ave', '555-5678', 'bob.smith@example.com', '1975-09-15'),
-(3, 'Carol', 'Brown', 1, 3, '789 Pine Rd', '555-8765', 'carol.brown@example.com', '1990-12-01'),
-(4, 'David', 'Williams', 3, 4, '101 Elm Blvd', '555-3456', 'david.williams@example.com', '1985-04-22'),
-(5, 'Eve', 'Miller', 2, 5, '202 Cedar Ln', '555-2345', 'eve.miller@example.com', '1978-07-08');
+INSERT INTO patients (id, first_name, last_name, insurance_carrier_id, primary_care_physician_id, address, phone_number, email, date_of_birth, gender) VALUES
+(1, 'Alice', 'Johnson', 1, 1, '123 Maple St', '555-1234', 'alice.johnson@example.com', '1980-05-10', 'Female'),
+(2, 'Bob', 'Smith', 2, 2, '456 Oak Ave', '555-5678', 'bob.smith@example.com', '1975-09-15', 'Male'),
+(3, 'Carol', 'Brown', 1, 3, '789 Pine Rd', '555-8765', 'carol.brown@example.com', '1990-12-01', 'Female'),
+(4, 'David', 'Williams', 3, 4, '101 Elm Blvd', '555-3456', 'david.williams@example.com', '1985-04-22', 'Male'),
+(5, 'Eve', 'Miller', 2, 5, '202 Cedar Ln', '555-2345', 'eve.miller@example.com', '1978-07-08', 'Female');
 
 -- Insert Medical Encounters
 INSERT INTO medical_encounters (id, patient_id, created_by_employee_id, practitioner_seen_id, date_of_encounter, patient_complaint, practitioner_notes, vital_signs, diagnosis, treatment_plan, referral, recommended_follow_up) VALUES

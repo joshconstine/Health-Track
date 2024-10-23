@@ -57,10 +57,12 @@ app.get('/patients', (req, res) => {
   ,p.created_at
   ,p.email
   ,p.date_of_birth
+  , p.gender
   from patients p
   join  insurance_carrier ic on ic.id = p.insurance_carrier_id
   join practitioners pr on pr.id = p.primary_care_physician_id
-  join employees e on e.employee_id = pr.employee_id;`;
+  join employees e on e.employee_id = pr.employee_id;
+`;
 
   // Try to run the query on the database
   try {
