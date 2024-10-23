@@ -621,7 +621,8 @@ app.get('/appointmentTypes', (req, res) => {
   }
 });
 const checkForTimeblockOverlap = (existingTimeblocks, newStartTime, newEndTime) => {
-    existingTimeblocks.forEach((timeblock) => {
+      for  (let i = 0; i < existingTimeblocks.length; i++) {
+        const timeblock = existingTimeblocks[i];
     const existingStartTime = new Date(timeblock.start_time)
     const existingEndTime = new Date(timeblock.end_time);
 
@@ -644,7 +645,7 @@ const checkForTimeblockOverlap = (existingTimeblocks, newStartTime, newEndTime) 
     if (newEndTime > existingStartTime && newEndTime <= existingEndTime) {
       return true;
     }
-})
+  }
   return false;
 }
 
