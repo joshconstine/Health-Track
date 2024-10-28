@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@date-fns/tz": "^1.1.2",
+    "@date-fns/utc": "^2.1.0",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "mysql2": "^3.11.0"

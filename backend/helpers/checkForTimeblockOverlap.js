@@ -1,33 +1,34 @@
 
 
- const checkForTimeblockOverlap = (existingTimeblocks, newStartTime, newEndTime) => {
-      for  (let i = 0; i < existingTimeblocks.length; i++) {
-        console.log('existingTimeblocks', existingTimeblocks);
-        const timeblock = existingTimeblocks[i];
-    const existingStartTime = new Date(timeblock.start_time)
-    const existingEndTime = new Date(timeblock.end_time);
-
-
-    const newStartTimeUTC = newStartTime.toISOString().slice(0, 19).replace('T', ' ');
-    const newEndTimeUTC = newEndTime.toISOString().slice(0, 19).replace('T', ' ');
-
-    newStartTime = new Date(newStartTimeUTC);
-    newEndTime = new Date(newEndTimeUTC);
-
+const checkForTimeblockOverlap = (existingTimeblocks, newStartTime, newEndTime) => {
     
 
-       console.log('comparing timeblocks', newStartTime, newEndTime, existingStartTime, existingEndTime);
+    for (let i = 0; i < existingTimeblocks.length; i++) {
+        const timeblock = existingTimeblocks[i];
+
+        const existingStartTime = new Date(timeblock.start_time);
+        
+        const existingEndTime = new Date(timeblock.end_time);
+
+        // add the same offset to the new start and end time
+        const offset = newStartTime.getTimezoneOffset();
+        const offsetDiff = existingEndTime.getTimezoneOffset() - offset;
+
+        existingEndTime.setMinutes(existingEndTime.getMinutes() + offsetDiff);
+        existingStartTime.setMinutes(existingStartTime.getMinutes() + offsetDiff);
 
 
-    if (newStartTime >= existingStartTime && newStartTime < existingEndTime) {
-      return true;
+        console.log('comparing timeblocks', newStartTime, newEndTime, existingStartTime, existingEndTime);
+        if (newStartTime >= existingStartTime && newStartTime < existingEndTime) {
+            console.log('overlap detected');
+            return true;
+        }
+
+        if (newEndTime > existingStartTime && newEndTime <= existingEndTime) {
+            console.log('overlap detected');
+            return true;
+        }
     }
-
-    if (newEndTime > existingStartTime && newEndTime <= existingEndTime) {
-      return true;
-    }
-  }
-  return false;
+    return false;
 }
-
 module.exports = checkForTimeblockOverlap;
