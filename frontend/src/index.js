@@ -17,6 +17,7 @@ import InsuranceCarrier from "./routes/InsuranceCarrier";
 import Practitioner from "./routes/Practitioner";
 import Practitioners from "./routes/Practitioners"; 
 import Patient from "./routes/Patient";
+import Equipment from "./routes/Equipment";
 import CreateAppointment from "./routes/CreateAppointment";
 import './App.css';
 
@@ -33,6 +34,9 @@ const router = createBrowserRouter([
       {
         path: "/appointments",
         element: <Appointments />
+      },{
+        path: "/equipment",
+        element: <Equipment />
       },
       {
         path: "/appointments/:id",
