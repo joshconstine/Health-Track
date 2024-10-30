@@ -63,7 +63,6 @@ const Patients = () => {
                     ))}
                 </tbody>
             </table>
-            <MedicalEncounters />
         </div>
     );
 }
