@@ -364,7 +364,7 @@ where pr.id = ${req.params.id}
 app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
-  const query = `select m.id
+  const query = `select distinct m.id
     ,m.practitioner_seen_id
     ,m.patient_complaint
     ,m.vital_signs
