@@ -4,6 +4,7 @@ import Appointment from "./routes/Appointment";
 import Patients from "./routes/Patients";
 import LabOrder from "./routes/LabOrder"
 import Dashboard from './routes/Dashboard';
+import SingleEquipment from "./routes/SingleEquipment";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       },{
         path: "/equipment",
         element: <Equipment />
+      },
+      {
+          path: "/equipment/:id",
+          element: <SingleEquipment />
       },
       {
         path: "/appointments/:id",
