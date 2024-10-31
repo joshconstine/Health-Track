@@ -634,6 +634,82 @@ function handleQueryError(err, res, connection, message) {
     return res.status(500).json({ error: message, details: err });
   });
 }
+app.get('/equipment', (req, res) => {
+  try {
+    connection.query(
+      `
+SELECT e.id
+, et.name
+, et.description
+, case when e.is_owned = 1 then 'Owned' else 'Leased' end as owned_leased
+, es.name as status
+FROM equipment e
+JOIN equipment_types et ON e.equipment_type_id = et.id
+JOIN equipment_status es ON e.equipment_status_id = es.id
+`,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/equipment/:id', (req, res) => {
+  try {
+    connection.query(
+      `
+SELECT e.id
+, et.name
+, et.description
+, case when e.is_owned = 1 then 'Owned' else 'Leased' end as owned_leased
+, es.name as status
+, le.*
+, oe.*
+FROM equipment e
+JOIN equipment_types et ON e.equipment_type_id = et.id
+JOIN equipment_status es ON e.equipment_status_id = es.id
+LEFT JOIN leased_equipment le ON e.id = le.equipment_id
+LEFT JOIN owned_equipment oe ON e.id = oe.equipment_id
+WHERE e.id = ${req.params.id}
+`, (err, rows, fields) => {
+
+        res.json(rows[0]);
+      }
+    );
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+app.get('/equipment/:id/maintenance', (req, res) => {
+  try {
+    connection.query(
+      `
+
+SELECT  e.id
+, pt.name
+, pt.description
+, em.resolution
+FROM equipment e
+JOIN equipment_maintenance em ON e.id = em.equipment_id
+jOIN equipment_problem_types pt ON em.equipment_problem_type_id = pt.id
+WHERE e.id = ${req.params.id}
+`, (err, rows, fields) => {
+
+        res.json(rows);
+      }
+    );
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
+
+
 
 app.post('/appointments', (req, res) => {
   const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;

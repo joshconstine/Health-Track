@@ -37,8 +37,8 @@ const Practitioners = () => {
                             <td>
                             <Link to={`/practitioners/${practitioner.id}`}>
                                 {practitioner.id}
-                        </Link>
-                                </td>
+                            </Link>
+                            </td>
                             <td>{practitioner.name}</td>
                             <td>{practitioner.phone_number}</td>
                             <td>{practitioner.pager_number}</td>
