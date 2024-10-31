@@ -685,6 +685,29 @@ WHERE e.id = ${req.params.id}
   }
 });
 
+app.get('/equipment/:id/maintenance', (req, res) => {
+  try {
+    connection.query(
+      `
+
+SELECT  e.id
+, pt.name
+, pt.description
+, em.resolution
+FROM equipment e
+JOIN equipment_maintenance em ON e.id = em.equipment_id
+jOIN equipment_problem_types pt ON em.equipment_problem_type_id = pt.id
+WHERE e.id = ${req.params.id}
+`, (err, rows, fields) => {
+
+        res.json(rows);
+      }
+    );
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
 
 
 
