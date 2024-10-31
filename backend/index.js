@@ -634,6 +634,28 @@ function handleQueryError(err, res, connection, message) {
     return res.status(500).json({ error: message, details: err });
   });
 }
+app.get('/equipment', (req, res) => {
+  try {
+    connection.query(
+      `
+SELECT e.id
+, et.name
+, et.description
+, case when e.is_owned = 1 then 'Owned' else 'Leased' end as owned_leased
+, es.name as status
+FROM equipment e
+JOIN equipment_types et ON e.equipment_type_id = et.id
+JOIN equipment_status es ON e.equipment_status_id = es.id
+`,
+      (err, rows, fields) => {
+        res.json(rows);
+      }
+    );
+  }
+  catch (error) {
+    console.log(error);
+  }
+});
 
 app.post('/appointments', (req, res) => {
   const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;

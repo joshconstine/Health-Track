@@ -147,17 +147,17 @@ INSERT INTO employee_schedule (employee_id, full_time, monday_start, monday_end,
 (20, TRUE, '08:00', '16:00', '08:00', '16:00', '08:00', '16:00', '08:00', '16:00', '08:00', '16:00');
 
 -- Equipment Data
-INSERT INTO equipment (id, equipment_type_id, is_owned) VALUES
-(1, 1, TRUE), -- X-Ray Machine (Owned)
-(2, 2, TRUE), -- ER Trauma Bed (Owned)
-(3, 3, TRUE), -- MRI Machine (Owned)
-(4, 4, TRUE), -- Ultrasound Machine (Owned)
-(5, 5, TRUE), -- EKG Machine (Owned)
-(6, 1, FALSE), -- X-Ray Machine (Leased)
-(7, 2, FALSE), -- ER Trauma Bed (Leased)
-(8, 3, FALSE), -- MRI Machine (Leased)
-(9, 4, FALSE), -- Ultrasound Machine (Leased)
-(10, 5, FALSE); -- Ventilator (Leased)
+INSERT INTO equipment (id, equipment_type_id, is_owned, equipment_status_id) VALUES
+(1, 1, TRUE, 2), -- X-Ray Machine (Owned)
+(2, 2, TRUE, 1), -- ER Trauma Bed (Owned)
+(3, 3, TRUE, 3), -- MRI Machine (Owned)
+(4, 4, TRUE, 1), -- Ultrasound Machine (Owned)
+(5, 5, TRUE, 1), -- EKG Machine (Owned)
+(6, 1, FALSE, 1), -- X-Ray Machine (Leased)
+(7, 2, FALSE, 1), -- ER Trauma Bed (Leased)
+(8, 3, FALSE, 1), -- MRI Machine (Leased)
+(9, 4, FALSE, 1), -- Ultrasound Machine (Leased)
+(10, 5, FALSE, 1); -- Ventilator (Leased)
 
 -- Owned Equipment Details
 INSERT INTO owned_equipment (equipment_id, date_purchased, warranty_expiration, warranty_description) VALUES
@@ -175,9 +175,9 @@ INSERT INTO leased_equipment (equipment_id, lease_start, lease_end, leased_from,
 (10, '2023-05-01', '2024-05-01', 'HealthTech Leasing Inc.', 'Ventilator lease');
 
 -- Equipment Maintenance Data
-INSERT INTO equipment_maintenance (id, equipment_id, equipment_problem_type_id, equipment_status_id, resolution) VALUES
-(1, 1, 1, 2, 'Repaired mechanical failure in X-Ray Machine'),
-(2, 3, 3, 1, 'Recalibrated MRI Machine sensors');
+INSERT INTO equipment_maintenance (id, equipment_id, equipment_problem_type_id,  resolution) VALUES
+(1, 1,  2, 'Repaired mechanical failure in X-Ray Machine'),
+(2, 3,  1, 'Recalibrated MRI Machine sensors');
 
 
 -- Insert Insurance Carriers

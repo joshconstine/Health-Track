@@ -220,6 +220,7 @@ CREATE TABLE invoice_provided_billable_services (
 CREATE TABLE equipment  (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     equipment_type_id  INTEGER NOT NULL,
+    equipment_status_id INTEGER NOT NULL,
     is_owned BOOLEAN NOT NULL
 );
 
@@ -254,7 +255,6 @@ CREATE TABLE equipment_maintenance (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     equipment_id INTEGER NOT NULL,
     equipment_problem_type_id INTEGER NOT NULL,
-    equipment_status_id INTEGER NOT NULL,
     resolution VARCHAR(1000)
 );
 
@@ -388,7 +388,8 @@ FOREIGN KEY (provided_billable_service_id) REFERENCES provided_billable_services
 ALTER TABLE equipment
 ADD CONSTRAINT fk_equipment_type_id
 FOREIGN KEY (equipment_type_id) REFERENCES equipment_types(id);
-
+ADD CONSTRAINT fk_equipment_status_id
+FOREIGN KEY (equipment_status_id) REFERENCES equipment_status(id);
 -- Owned Equipment
 ALTER TABLE owned_equipment
 ADD CONSTRAINT fk_owned_equipment_equipment_id
@@ -404,6 +405,5 @@ ALTER TABLE equipment_maintenance
 ADD CONSTRAINT fk_equipment_maintenance_equipment_id
 FOREIGN KEY (equipment_id) REFERENCES equipment(id),
 ADD CONSTRAINT fk_equipment_maintenance_problem_type_id
-FOREIGN KEY (equipment_problem_type_id) REFERENCES equipment_problem_types(id),
-ADD CONSTRAINT fk_equipment_maintenance_status_id
-FOREIGN KEY (equipment_status_id) REFERENCES equipment_status(id);
+FOREIGN KEY (equipment_problem_type_id) REFERENCES equipment_problem_types(id);
+
