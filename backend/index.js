@@ -1,17 +1,17 @@
 // backend/index.js
-const checkForTimeblockOverlap = require('./helpers/checkForTimeblockOverlap');
-const express = require('express');
-const cors = require('cors');
-const mysql = require('mysql2');
-const { TZDate } = require("@date-fns/tz")
+const checkForTimeblockOverlap = require("./helpers/checkForTimeblockOverlap");
+const express = require("express");
+const cors = require("cors");
+const mysql = require("mysql2");
+const { TZDate } = require("@date-fns/tz");
 
 const app = express();
 
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'health',
+  host: process.env.DB_HOST || "localhost",
+  user: "root",
+  password: "password",
+  database: "health",
   port: 3306,
   multipleStatements: true,
 });
@@ -26,25 +26,25 @@ connection.connect();
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   res.json([
     {
-      id: '1',
-      title: 'Book Review: The Name of the Wind',
+      id: "1",
+      title: "Book Review: The Name of the Wind",
     },
     {
-      id: '2',
-      title: 'Game Review: Pokemon Brillian Diamond',
+      id: "2",
+      title: "Game Review: Pokemon Brillian Diamond",
     },
     {
-      id: '3',
-      title: 'Show Review: Alice in Borderland',
+      id: "3",
+      title: "Show Review: Alice in Borderland",
     },
   ]);
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get('/patients', (req, res) => {
+app.get("/patients", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -78,16 +78,16 @@ app.get('/patients', (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get('/labOrders', (req, res) => {
+app.get("/labOrders", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
 
-  const selectedPractitionerId = req.query.practitioner_id
+  const selectedPractitionerId = req.query.practitioner_id;
 
   const query = `
 SELECT l.ID
@@ -107,7 +107,7 @@ join patients p on  p.id = l.patient_id
 join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
 join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
 join practitioners lab_tech on lab_tech.id = l.lab_technician_id
-join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id;`
+join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id;`;
 
   const filterdQuery = `
   SELECT l.ID
@@ -128,26 +128,28 @@ join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
 join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
 join practitioners lab_tech on lab_tech.id = l.lab_technician_id
 join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id
-  where l.ordered_by_physician_id = ${selectedPractitionerId}`
-
+  where l.ordered_by_physician_id = ${selectedPractitionerId}`;
 
   // Try to run the query on the database
   try {
-    connection.query(selectedPractitionerId ? filterdQuery : query, (err, rows) => {
-      // Run the SQL query
-      if (err) throw err; // If there is an error, throw it
+    connection.query(
+      selectedPractitionerId ? filterdQuery : query,
+      (err, rows) => {
+        // Run the SQL query
+        if (err) throw err; // If there is an error, throw it
 
-      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
-    });
+        res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+      }
+    );
   } catch (error) {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
-app.get('/patients/:id', (req, res) => {
+app.get("/patients/:id", (req, res) => {
   try {
     connection.query(
       `
@@ -176,7 +178,7 @@ SELECT p.id
     console.log(error);
   }
 });
-app.get('/patients/:id/prescriptions', (req, res) => {
+app.get("/patients/:id/prescriptions", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -209,10 +211,10 @@ where p.patient_id = ${req.params.id}
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
-app.get('/patients/:id/medicalEncounters', (req, res) => {
+app.get("/patients/:id/medicalEncounters", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `select m.id
@@ -251,11 +253,11 @@ app.get('/patients/:id/medicalEncounters', (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get('/practitioners', (req, res) => {
+app.get("/practitioners", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -293,11 +295,11 @@ app.get('/practitioners', (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
-app.get('/practitioners/:id', (req, res) => {
+app.get("/practitioners/:id", (req, res) => {
   try {
     connection.query(
       `
@@ -328,7 +330,7 @@ app.get('/practitioners/:id', (req, res) => {
     console.log(error);
   }
 });
-app.get('/practitioners/:id/appointments', (req, res) => {
+app.get("/practitioners/:id/appointments", (req, res) => {
   try {
     connection.query(
       `
@@ -363,7 +365,7 @@ where pr.id = ${req.params.id}
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get('/medicalEncounters', (req, res) => {
+app.get("/medicalEncounters", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `select distinct m.id
@@ -400,12 +402,12 @@ app.get('/medicalEncounters', (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get('/practitioners', (req, res) => {
+app.get("/practitioners", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -434,13 +436,12 @@ app.get('/practitioners', (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
-app.get('/appointments', (req, res) => {
-  const queryA =
-    `select a.id
+app.get("/appointments", (req, res) => {
+  const queryA = `select a.id
      , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
      , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
      ,CONCAT(p.first_name, ' ', p.last_name) as patient_name
@@ -467,7 +468,7 @@ from appointments a
   }
 });
 
-app.get('/appointments/:id', (req, res) => {
+app.get("/appointments/:id", (req, res) => {
   try {
     connection.query(
       `select a.id
@@ -502,7 +503,7 @@ where a.id = ${req.params.id}
   }
 });
 
-app.get('/appointments/:id/billableServices', (req, res) => {
+app.get("/appointments/:id/billableServices", (req, res) => {
   try {
     connection.query(
       `select bs.description
@@ -520,7 +521,7 @@ where pbs.appointment_id = ${req.params.id};`,
   }
 });
 
-app.get('/appointments/:id/labOrders', (req, res) => {
+app.get("/appointments/:id/labOrders", (req, res) => {
   try {
     connection.query(
       `select ltt.name
@@ -542,10 +543,10 @@ where lo.appointment_id = ${req.params.id};`,
   }
 });
 
-app.get('/insuranceCarriers', (req, res) => {
+app.get("/insuranceCarriers", (req, res) => {
   try {
     connection.query(
-      'select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;',
+      "select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;",
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -557,8 +558,7 @@ app.get('/insuranceCarriers', (req, res) => {
   }
 });
 
-
-app.get('/insuranceCarriers/:id', (req, res) => {
+app.get("/insuranceCarriers/:id", (req, res) => {
   try {
     connection.query(
       `select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`,
@@ -573,7 +573,7 @@ app.get('/insuranceCarriers/:id', (req, res) => {
   }
 });
 
-app.get('/insuranceCarriers/:id/invoices', (req, res) => {
+app.get("/insuranceCarriers/:id/invoices", (req, res) => {
   try {
     connection.query(
       `select i.id
@@ -599,10 +599,10 @@ where ic.id =  ${req.params.id}
     console.log(error);
   }
 });
-app.get('/billableServices', (req, res) => {
+app.get("/billableServices", (req, res) => {
   try {
     connection.query(
-      'select bs.id, bs.name,bs.cost from billable_services bs',
+      "select bs.id, bs.name,bs.cost from billable_services bs",
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -613,10 +613,10 @@ app.get('/billableServices', (req, res) => {
     console.log(error);
   }
 });
-app.get('/appointmentTypes', (req, res) => {
+app.get("/appointmentTypes", (req, res) => {
   try {
     connection.query(
-      'select id, name from appointment_types',
+      "select id, name from appointment_types",
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -629,12 +629,12 @@ app.get('/appointmentTypes', (req, res) => {
 });
 // Utility function for handling errors and rolling back transactions
 function handleQueryError(err, res, connection, message) {
-  console.log('error', err);
+  console.log("error", err);
   return connection.rollback(() => {
     return res.status(500).json({ error: message, details: err });
   });
 }
-app.get('/equipment', (req, res) => {
+app.get("/equipment", (req, res) => {
   try {
     connection.query(
       `
@@ -643,6 +643,7 @@ SELECT e.id
 , et.description
 , case when e.is_owned = 1 then 'Owned' else 'Leased' end as owned_leased
 , es.name as status
+, e.department
 FROM equipment e
 JOIN equipment_types et ON e.equipment_type_id = et.id
 JOIN equipment_status es ON e.equipment_status_id = es.id
@@ -651,13 +652,12 @@ JOIN equipment_status es ON e.equipment_status_id = es.id
         res.json(rows);
       }
     );
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
   }
 });
 
-app.get('/equipment/:id', (req, res) => {
+app.get("/equipment/:id", (req, res) => {
   try {
     connection.query(
       `
@@ -674,18 +674,17 @@ JOIN equipment_status es ON e.equipment_status_id = es.id
 LEFT JOIN leased_equipment le ON e.id = le.equipment_id
 LEFT JOIN owned_equipment oe ON e.id = oe.equipment_id
 WHERE e.id = ${req.params.id}
-`, (err, rows, fields) => {
-
+`,
+      (err, rows, fields) => {
         res.json(rows[0]);
       }
     );
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
   }
 });
 
-app.get('/equipment/:id/maintenance', (req, res) => {
+app.get("/equipment/:id/maintenance", (req, res) => {
   try {
     connection.query(
       `
@@ -698,91 +697,178 @@ FROM equipment e
 JOIN equipment_maintenance em ON e.id = em.equipment_id
 jOIN equipment_problem_types pt ON em.equipment_problem_type_id = pt.id
 WHERE e.id = ${req.params.id}
-`, (err, rows, fields) => {
-
+`,
+      (err, rows, fields) => {
         res.json(rows);
       }
     );
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
   }
 });
 
-
-
-app.post('/appointments', (req, res) => {
-  const { appointment_date, appointment_type_id, practitioner_id, patient_id } = req.body;
+app.post("/appointments", (req, res) => {
+  const { appointment_date, appointment_type_id, practitioner_id, patient_id } =
+    req.body;
   const newStartTime = new TZDate(appointment_date);
-  const newEndTime = new TZDate(new Date(appointment_date).setHours(newStartTime.getHours() + 1));
-  const dbDate = newStartTime.toISOString().slice(0, 19).replace('T', ' ');
-  const dbEndTime = newEndTime.toISOString().slice(0, 19).replace('T', ' ');
+  const newEndTime = new TZDate(
+    new Date(appointment_date).setHours(newStartTime.getHours() + 1)
+  );
+  const dbDate = newStartTime.toISOString().slice(0, 19).replace("T", " ");
+  const dbEndTime = newEndTime.toISOString().slice(0, 19).replace("T", " ");
 
   const existingPractitionerTimeblocksQuery = `SELECT * FROM practitioner_timeblocks WHERE practitioner_id = ? FOR UPDATE`;
 
   connection.beginTransaction((err) => {
-    if (err) return res.status(500).json({ error: 'Transaction start error', details: err });
-    
-    connection.query(existingPractitionerTimeblocksQuery, [practitioner_id], (err, existingTimeblocks) => {
-      if (err) return res.status(500).json({ error: 'Error fetching existing timeblocks', details: err });
+    if (err)
+      return res
+        .status(500)
+        .json({ error: "Transaction start error", details: err });
 
+    connection.query(
+      existingPractitionerTimeblocksQuery,
+      [practitioner_id],
+      (err, existingTimeblocks) => {
+        if (err)
+          return res.status(500).json({
+            error: "Error fetching existing timeblocks",
+            details: err,
+          });
 
+        //add offset to newStartTime and newEndTime
+        if (
+          checkForTimeblockOverlap(existingTimeblocks, newStartTime, newEndTime)
+        ) {
+          return res.status(400).json({
+            error: "Timeblock overlap",
+            details: "Practitioner already has an appointment at this time",
+          });
+        }
 
-
-    
-      //add offset to newStartTime and newEndTime
-      if (checkForTimeblockOverlap(existingTimeblocks, newStartTime, newEndTime)) {
-        return res.status(400).json({ error: 'Timeblock overlap', details: 'Practitioner already has an appointment at this time' });
+        // Insert the timeblock and appointment
+        insertTimeblock(
+          connection,
+          practitioner_id,
+          dbDate,
+          dbEndTime,
+          res,
+          appointment_type_id,
+          patient_id
+        );
       }
-
-
-      // Insert the timeblock and appointment
-      insertTimeblock(connection, practitioner_id, dbDate, dbEndTime, res, appointment_type_id, patient_id);
-    });
+    );
   });
 });
 
-function insertTimeblock(connection, practitioner_id, dbDate, dbEndTime, res, appointment_type_id, patient_id) {
+function insertTimeblock(
+  connection,
+  practitioner_id,
+  dbDate,
+  dbEndTime,
+  res,
+  appointment_type_id,
+  patient_id
+) {
   const insertTimeblockQuery = `INSERT INTO practitioner_timeblocks (practitioner_id, start_time, end_time) VALUES (?, ?, ?)`;
 
-  connection.query(insertTimeblockQuery, [practitioner_id, dbDate, dbEndTime], (err, result) => {
-    if (err) return handleQueryError(err, res, connection, 'Error inserting timeblock');
+  connection.query(
+    insertTimeblockQuery,
+    [practitioner_id, dbDate, dbEndTime],
+    (err, result) => {
+      if (err)
+        return handleQueryError(
+          err,
+          res,
+          connection,
+          "Error inserting timeblock"
+        );
 
-    const practitioner_timeblock_id = result.insertId;
-    insertAppointment(connection, practitioner_timeblock_id, appointment_type_id, patient_id, res);
-  });
+      const practitioner_timeblock_id = result.insertId;
+      insertAppointment(
+        connection,
+        practitioner_timeblock_id,
+        appointment_type_id,
+        patient_id,
+        res
+      );
+    }
+  );
 }
 
-function insertAppointment(connection, practitioner_timeblock_id, appointment_type_id, patient_id, res) {
+function insertAppointment(
+  connection,
+  practitioner_timeblock_id,
+  appointment_type_id,
+  patient_id,
+  res
+) {
   const insertAppointmentQuery = `INSERT INTO appointments (appointment_type_id, patient_id, practitioner_timeblock_id) VALUES (?, ?, ?)`;
 
-  connection.query(insertAppointmentQuery, [appointment_type_id, patient_id, practitioner_timeblock_id], (err, result) => {
-    if (err) return handleQueryError(err, res, connection, 'Error inserting appointment');
+  connection.query(
+    insertAppointmentQuery,
+    [appointment_type_id, patient_id, practitioner_timeblock_id],
+    (err, result) => {
+      if (err)
+        return handleQueryError(
+          err,
+          res,
+          connection,
+          "Error inserting appointment"
+        );
 
-    const appointment_id = result.insertId;
-    updateTimeblockWithAppointment(connection, practitioner_timeblock_id, appointment_id, res);
-  });
+      const appointment_id = result.insertId;
+      updateTimeblockWithAppointment(
+        connection,
+        practitioner_timeblock_id,
+        appointment_id,
+        res
+      );
+    }
+  );
 }
 
-function updateTimeblockWithAppointment(connection, practitioner_timeblock_id, appointment_id, res) {
+function updateTimeblockWithAppointment(
+  connection,
+  practitioner_timeblock_id,
+  appointment_id,
+  res
+) {
   const updateTimeblockQuery = `UPDATE practitioner_timeblocks SET appointment_id = ? WHERE id = ?`;
 
-  connection.query(updateTimeblockQuery, [appointment_id, practitioner_timeblock_id], (err) => {
-    if (err) return handleQueryError(err, res, connection, 'Error updating timeblock');
+  connection.query(
+    updateTimeblockQuery,
+    [appointment_id, practitioner_timeblock_id],
+    (err) => {
+      if (err)
+        return handleQueryError(
+          err,
+          res,
+          connection,
+          "Error updating timeblock"
+        );
 
-    connection.commit((err) => {
-      if (err) return handleQueryError(err, res, connection, 'Transaction commit error');
-      res.json({ message: 'Appointment created successfully', appointment_id });
-    });
-  });
+      connection.commit((err) => {
+        if (err)
+          return handleQueryError(
+            err,
+            res,
+            connection,
+            "Transaction commit error"
+          );
+        res.json({
+          message: "Appointment created successfully",
+          appointment_id,
+        });
+      });
+    }
+  );
 }
-
 
 //404 page
 app.use((req, res) => {
-  res.status(404).send('404 page not found');
+  res.status(404).send("404 page not found");
 });
 
 app.listen(4000, () => {
-  console.log('listening for requests on port 4000');
+  console.log("listening for requests on port 4000");
 });
