@@ -221,7 +221,8 @@ CREATE TABLE equipment  (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     equipment_type_id  INTEGER NOT NULL,
     equipment_status_id INTEGER NOT NULL,
-    is_owned BOOLEAN NOT NULL
+    is_owned BOOLEAN NOT NULL,
+    department VARCHAR(1000)
 );
 
 

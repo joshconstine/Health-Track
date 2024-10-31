@@ -147,17 +147,17 @@ INSERT INTO employee_schedule (employee_id, full_time, monday_start, monday_end,
 (20, TRUE, '08:00', '16:00', '08:00', '16:00', '08:00', '16:00', '08:00', '16:00', '08:00', '16:00');
 
 -- Equipment Data
-INSERT INTO equipment (id, equipment_type_id, is_owned, equipment_status_id) VALUES
-(1, 1, TRUE, 2), -- X-Ray Machine (Owned)
-(2, 2, TRUE, 1), -- ER Trauma Bed (Owned)
-(3, 3, TRUE, 3), -- MRI Machine (Owned)
-(4, 4, TRUE, 1), -- Ultrasound Machine (Owned)
-(5, 5, TRUE, 1), -- EKG Machine (Owned)
-(6, 1, FALSE, 1), -- X-Ray Machine (Leased)
-(7, 2, FALSE, 1), -- ER Trauma Bed (Leased)
-(8, 3, FALSE, 1), -- MRI Machine (Leased)
-(9, 4, FALSE, 1), -- Ultrasound Machine (Leased)
-(10, 5, FALSE, 1); -- Ventilator (Leased)
+INSERT INTO equipment (id, equipment_type_id, is_owned, equipment_status_id, department) VALUES
+(1, 1, TRUE, 2, 'Radiology'), -- X-Ray Machine (Owned)
+(2, 2, TRUE, 1, 'ER'), -- ER Trauma Bed (Owned)
+(3, 3, TRUE, 3, 'Radiology'), -- MRI Machine (Owned)
+(4, 4, TRUE, 1, 'Radiology'), -- Ultrasound Machine (Owned)
+(5, 5, TRUE, 1, 'Cardiology'), -- EKG Machine (Owned)
+(6, 1, FALSE, 1, 'Radiology'), -- X-Ray Machine (Leased)
+(7, 2, FALSE, 1, 'ER'), -- ER Trauma Bed (Leased)
+(8, 3, FALSE, 1, 'Radiology'), -- MRI Machine (Leased)
+(9, 4, FALSE, 1, 'Radiology'), -- Ultrasound Machine (Leased)
+(10, 5, FALSE, 1, 'EMS'); -- Ventilator (Leased)
 
 -- Owned Equipment Details
 INSERT INTO owned_equipment (equipment_id, date_purchased, warranty_expiration, warranty_description) VALUES
