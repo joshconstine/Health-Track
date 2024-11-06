@@ -87,7 +87,10 @@ app.get("/labOrders", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
 
-  const selectedPractitionerId = req.query.practitioner_id;
+  const selectedPractitionerId = req.query.practitioner_id
+    ? req.query.practitioner_id
+    : "";
+  const selectedPatientId = req.query.patient_id ? req.query.patient_id : "";
 
   const query = `
 SELECT l.ID
@@ -128,7 +131,7 @@ join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
 join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
 join practitioners lab_tech on lab_tech.id = l.lab_technician_id
 join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id
-  where l.ordered_by_physician_id = ${selectedPractitionerId}`;
+  where l.ordered_by_physician_id = ${selectedPractitionerId} OR l.patient_id = ${selectedPatientId}`;
 
   // Try to run the query on the database
   try {
