@@ -352,6 +352,21 @@ where pr.id = ${req.params.id}
   }
 });
 
+app.get("/labTestTypes", (req, res) => {
+  try {
+    connection.query(
+      "select id, name, description, lower_bound, upper_bound from lab_test_types",
+      (err, rows, fields) => {
+        if (err) throw err;
+
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+})
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get("/medicalEncounters", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
