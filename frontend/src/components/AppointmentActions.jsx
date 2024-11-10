@@ -3,7 +3,7 @@ import Appointment from "../routes/Appointment";
 
 
 
-const AppointmentActions = ({AppointmentID, PatientID, AppointmentPhysicianID}) => {
+const AppointmentActions = ({AppointmentID, PatientID, AppointmentPhysicianID, Refetch}) => {
         // {
         //     "id": 1,
         //     "name": "xray",
@@ -70,6 +70,7 @@ const AddLabOrderToAppointment = async (labOrder) => {
     });
     const data = await response.json();
     console.log(data);
+    Refetch(AppointmentID);
 }
 
     return(

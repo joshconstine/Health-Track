@@ -36,6 +36,7 @@ const Appointment = () => {
       <AppointmentActions AppointmentID={id} 
       PatientID={appointment.patient_id}
       AppointmentPhysicianID={appointment.practitioner_id}
+      Refetch={fetchAppointment}
 
       />
     <div className='AppointmentBody'>
