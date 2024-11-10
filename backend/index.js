@@ -365,7 +365,30 @@ app.get("/labTestTypes", (req, res) => {
   } catch (error) {
     console.log(error);
   }
-})
+});
+
+app.post("/labOrders", (req, res) => {
+  const {
+    appointment_id,
+    lab_test_type_id,
+    patient_id,
+    ordered_by_physician_id,
+  } = req.body;
+
+  const query = `INSERT INTO lab_orders (appointment_id, lab_test_type_id, patient_id, ordered_by_physician_id) VALUES (${appointment_id}, ${lab_test_type_id}, ${patient_id}, ${ordered_by_physician_id})`;
+
+  try {
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+
+      res.json({ success: true });
+    }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get("/medicalEncounters", (req, res) => {
@@ -477,6 +500,7 @@ app.get("/appointments/:id", (req, res) => {
       `select a.id
 ,p.first_name
 ,p.last_name
+, p.id as patient_id
 ,at.name
 ,prty.name
 ,e.first_name
@@ -485,6 +509,7 @@ app.get("/appointments/:id", (req, res) => {
 ,e.phone_number
 ,prt.start_time
 ,prt.end_time
+, pr.id as practitioner_id
 ,ic.name
 from appointments a
 join appointment_types at on a.appointment_type_id = at.id
@@ -534,8 +559,8 @@ app.get("/appointments/:id/labOrders", (req, res) => {
 , CONCAT(e.first_name, ' ', e.last_name) as lab_technician_name
 from lab_orders lo
 join lab_test_types ltt on lo.lab_test_type_id = ltt.id
-join practitioners pr on lo.lab_technician_id = pr.id
-join employees e on pr.employee_id = e.employee_id
+left join practitioners pr on lo.lab_technician_id = pr.id
+left join employees e on pr.employee_id = e.employee_id
 where lo.appointment_id = ${req.params.id};`,
       (err, rows, fields) => {
         res.json(rows);

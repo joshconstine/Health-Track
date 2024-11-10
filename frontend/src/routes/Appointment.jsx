@@ -33,7 +33,11 @@ const Appointment = () => {
   }, []);
   return (
     <div className='AppointmentContainer'>
-      <AppointmentActions AppointmentID={id} />
+      <AppointmentActions AppointmentID={id} 
+      PatientID={appointment.patient_id}
+      AppointmentPhysicianID={appointment.practitioner_id}
+
+      />
     <div className='AppointmentBody'>
       <div className='AppointmentDetail'>
         <h1>Appointment {appointment.id}</h1>
