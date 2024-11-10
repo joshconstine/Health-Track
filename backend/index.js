@@ -390,6 +390,27 @@ app.post("/labOrders", (req, res) => {
 });
 
 
+app.post("/providedBillableServices", (req, res) => {
+  const {
+    appointment_id,
+    billable_service_id,
+    patient_id,
+  } = req.body;
+
+  const query = `INSERT INTO provided_billable_services (appointment_id, billable_service_id, patient_id) VALUES (${appointment_id}, ${billable_service_id}, ${patient_id})`;
+
+  try {
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+
+      res.json({ success: true });
+    }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get("/medicalEncounters", (req, res) => {
   // Define the SQL query that selects first and last names from the employees table

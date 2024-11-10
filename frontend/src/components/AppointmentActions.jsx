@@ -73,6 +73,26 @@ const AddLabOrderToAppointment = async (labOrder) => {
     Refetch(AppointmentID);
 }
 
+
+const AddBillableServiceToAppointment = async (service) => {
+    const response = await fetch(`http://localhost:4000/providedBillableServices`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            appointment_id: AppointmentID,
+            billable_service_id: service.id,
+            patient_id: PatientID,
+        }),
+
+
+    })
+    const data = await response.json();
+    console.log(data);
+    Refetch(AppointmentID);
+}
+
     return(
         <div>
             <button
@@ -88,7 +108,12 @@ const AddLabOrderToAppointment = async (labOrder) => {
                     <ul>
                         {billableServices.map((service) => (
                             <li key={service.id}>
-                                {service.name} - {service.cost}
+                              <span>
+                                  {service.name} - {service.cost}
+                                </span>
+                                <button
+                                    onClick={() => AddBillableServiceToAppointment(service)}
+                                >Add</button>
                             </li>
                         ))}
                     </ul>
