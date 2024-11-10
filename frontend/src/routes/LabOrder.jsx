@@ -32,6 +32,18 @@ const LabOrder = () => {
       );
       const data = await response.json();
       setLabOrders(data);
+    } else if (selectedPractitionerId !== "") {
+      const response = await fetch(
+        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}`
+      );
+      const data = await response.json();
+      setLabOrders(data);
+    } else if (selectedPatientId !== "") {
+      const response = await fetch(
+        `http://localhost:4000/labOrders?patient_id=${selectedPatientId}`
+      );
+      const data = await response.json();
+      setLabOrders(data);
     }
   };
 
@@ -40,10 +52,8 @@ const LabOrder = () => {
   }, []);
 
   React.useEffect(() => {
-    if (selectedPractitionerId) {
       fetchLabOrdersByPractitioner();
-    }
-  }, [selectedPractitionerId, selectedPatientId]);
+      }, [selectedPractitionerId, selectedPatientId]);
 
   // {
   //     "ID": 1,

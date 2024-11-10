@@ -89,8 +89,8 @@ app.get("/labOrders", (req, res) => {
 
   const selectedPractitionerId = req.query.practitioner_id
     ? req.query.practitioner_id
-    : "";
-  const selectedPatientId = req.query.patient_id ? req.query.patient_id : "";
+    : null;
+  const selectedPatientId = req.query.patient_id ? req.query.patient_id : null;
 
   const query = `
 SELECT l.ID
@@ -110,33 +110,18 @@ join patients p on  p.id = l.patient_id
 join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
 join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
 join practitioners lab_tech on lab_tech.id = l.lab_technician_id
-join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id;`;
+join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id`;
 
-  const filterdQuery = `
-  SELECT l.ID
-, ltt.name
-,l.patient_id
-,l.ordered_by_physician_id
-,l.appointment_id
-,l.lab_technician_id
-,l.measured_value
-,l.date_taken
-,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
-,CONCAT(orderd_by_employee.first_name, ' ',orderd_by_employee.last_name) as practitioner_name
-,CONCAT(lab_tech_employee.first_name, ' ',lab_tech_employee.last_name) as technician_name
-FROM lab_orders l
-join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
-join patients p on  p.id = l.patient_id
-join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
-join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
-join practitioners lab_tech on lab_tech.id = l.lab_technician_id
-join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id
-  where l.ordered_by_physician_id = ${selectedPractitionerId} OR l.patient_id = ${selectedPatientId}`;
-
+const practitionerFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId};`;
+const patientFilter = ` where l.patient_id = ${selectedPatientId};`;
+const combinedFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId} AND l.patient_id = ${selectedPatientId};`;
   // Try to run the query on the database
+
+  const querToRun = selectedPractitionerId && selectedPatientId ? query + combinedFilter : selectedPractitionerId ? query + practitionerFilter : selectedPatientId ?  query + patientFilter : query;
+  console.log(querToRun);
   try {
     connection.query(
-      selectedPractitionerId ? filterdQuery : query,
+      querToRun,
       (err, rows) => {
         // Run the SQL query
         if (err) throw err; // If there is an error, throw it
