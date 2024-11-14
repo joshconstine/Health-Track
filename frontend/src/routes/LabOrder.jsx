@@ -38,7 +38,6 @@ const LabOrder = () => {
 
     return params.toString() ? `?${params.toString()}` : "";
   };
-
   // Fetch lab orders based on selected filters
   const fetchLabOrders = async () => {
     const queryParams = buildQueryParams();
@@ -153,7 +152,7 @@ const LabOrder = () => {
                 </Link>
               </td>
               <td>{labOrder.name}</td>
-              <td>{new Date(labOrder.date_taken).toLocaleString()}</td>
+              <td>{labOrder.date_taken}</td>
               <td>
                 <Link to={`/practitioners/${labOrder.lab_technician_id}`}>
                   {labOrder.technician_name}

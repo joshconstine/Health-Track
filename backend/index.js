@@ -14,6 +14,7 @@ const connection = mysql.createConnection({
   database: "health",
   port: 3306,
   multipleStatements: true,
+  timezone: "Z",
 });
 
 connection.connect();
@@ -130,12 +131,14 @@ app.get("/labOrders", (req, res) => {
     query += " WHERE " + filters.join(" AND ");
   }
 
-  console.log(query);
-
   // Run the query
   try {
     connection.query(query, (err, rows) => {
       if (err) throw err;
+      //return date in the format yyyy-mm-dd
+      rows.forEach((row) => {
+        row.date_taken = row.date_taken.toISOString().split("T")[0];
+      });
       res.json(rows);
     });
   } catch (error) {
