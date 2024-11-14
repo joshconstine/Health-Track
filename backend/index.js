@@ -84,66 +84,66 @@ app.get("/patients", (req, res) => {
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
 app.get("/labOrders", (req, res) => {
-  // Define the SQL query that selects first and last names from the employees table
-  // and gets their practitioner type from the practitioner_types table.
+  const selectedPractitionerId = req.query.practitioner_id || null;
+  const selectedPatientId = req.query.patient_id || null;
+  const selectedDate = req.query.date_taken || null;
 
-  const selectedPractitionerId = req.query.practitioner_id
-    ? req.query.practitioner_id
-    : null;
-  const selectedPatientId = req.query.patient_id ? req.query.patient_id : null;
-  const selectedDate = req.query.date_taken ? req.query.date_taken : null;
+  // Base query
+  let query = `
+    SELECT 
+      l.ID,
+      ltt.name,
+      l.patient_id,
+      l.ordered_by_physician_id,
+      l.appointment_id,
+      l.lab_technician_id,
+      l.measured_value,
+      l.date_taken,
+      CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
+      CONCAT(orderd_by_employee.first_name, ' ', orderd_by_employee.last_name) AS practitioner_name,
+      CONCAT(lab_tech_employee.first_name, ' ', lab_tech_employee.last_name) AS technician_name
+    FROM lab_orders l
+    JOIN health.lab_test_types ltt ON ltt.id = l.lab_test_type_id
+    JOIN patients p ON p.id = l.patient_id
+    JOIN practitioners orderd_by ON orderd_by.id = l.ordered_by_physician_id
+    JOIN employees orderd_by_employee ON orderd_by.employee_id = orderd_by_employee.employee_id
+    JOIN practitioners lab_tech ON lab_tech.id = l.lab_technician_id
+    JOIN employees lab_tech_employee ON lab_tech.employee_id = lab_tech_employee.employee_id
+  `;
 
-  const query = `
-SELECT l.ID
-, ltt.name
-,l.patient_id
-,l.ordered_by_physician_id
-,l.appointment_id
-,l.lab_technician_id
-,l.measured_value
-,l.date_taken
-,CONCAT(p.first_name, ' ', p.last_name) AS patient_name
-,CONCAT(orderd_by_employee.first_name, ' ',orderd_by_employee.last_name) as practitioner_name
-,CONCAT(lab_tech_employee.first_name, ' ',lab_tech_employee.last_name) as technician_name
-FROM lab_orders l
-join health.lab_test_types ltt on ltt.id = l.lab_test_type_id
-join patients p on  p.id = l.patient_id
-join practitioners orderd_by on orderd_by.id = l.ordered_by_physician_id
-join employees orderd_by_employee on orderd_by.employee_id = orderd_by_employee.employee_id
-join practitioners lab_tech on lab_tech.id = l.lab_technician_id
-join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.employee_id`;
+  // Array to hold filters
+  const filters = [];
 
-  const practitionerFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId};`;
-  const patientFilter = ` where l.patient_id = ${selectedPatientId};`;
-  const dateFilter = ` where l.date_taken = '${selectedDate}';`;
-  const combinedFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId} AND l.patient_id = ${selectedPatientId} AND l.date_taken = ${selectedDate};`;
-  // Try to run the query on the database
+  // Add filters dynamically
+  if (selectedPractitionerId) {
+    filters.push(`l.ordered_by_physician_id = ${connection.escape(selectedPractitionerId)}`);
+  }
+  if (selectedPatientId) {
+    filters.push(`l.patient_id = ${connection.escape(selectedPatientId)}`);
+  }
+  if (selectedDate) {
+    filters.push(`l.date_taken = ${connection.escape(selectedDate)}`);
+  }
 
-  const querToRun =
-    selectedPractitionerId && selectedPatientId && selectedDate
-      ? query + combinedFilter
-      : selectedPractitionerId
-      ? query + practitionerFilter
-      : selectedPatientId
-      ? query + patientFilter
-      : selectedDate
-      ? query + dateFilter
-      : query;
-  console.log(querToRun);
+  // If there are any filters, append them to the query
+  if (filters.length > 0) {
+    query += " WHERE " + filters.join(" AND ");
+  }
+
+  console.log(query);
+
+  // Run the query
   try {
-    connection.query(querToRun, (err, rows) => {
-      // Run the SQL query
-      if (err) throw err; // If there is an error, throw it
-
-      res.json(rows); // Send the result (rows) back to the client (your React app) in JSON format
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+      res.json(rows);
     });
   } catch (error) {
-    // If there's an error in running the query or connecting to the database,
-    // log the error and send a 500 status (server error) to the client.
     console.log(error);
     res.status(500).send("Server error");
   }
 });
+
 
 app.get("/patients/:id", (req, res) => {
   try {

@@ -16,7 +16,7 @@ const LabOrder = () => {
   //selected data
   const [selectedDate, setSelectedDate] = useState("");
 
-  const fetchLabOrders = async () => {
+  const fetchInitialData = async () => {
     const response = await fetch("http://localhost:4000/labOrders");
     const data = await response.json();
     setLabOrders(data);
@@ -28,44 +28,36 @@ const LabOrder = () => {
     setPatientOptions(data3);
   };
 
-  const fetchLabOrdersByPractitioner = async () => {
-    if (
-      selectedPatientId !== "" &&
-      selectedPractitionerId !== "" &&
-      selectedDate == ""
-    ) {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}&patient_id=${selectedPatientId}&date_taken=${selectedDate}`
-      );
+  // Build query parameters dynamically based on selected filters
+  const buildQueryParams = () => {
+    const params = new URLSearchParams();
+    
+    if (selectedPractitionerId) params.append("practitioner_id", selectedPractitionerId);
+    if (selectedPatientId) params.append("patient_id", selectedPatientId);
+    if (selectedDate) params.append("date_taken", selectedDate);
+
+    return params.toString() ? `?${params.toString()}` : "";
+  };
+
+  // Fetch lab orders based on selected filters
+  const fetchLabOrders = async () => {
+    const queryParams = buildQueryParams();
+
+    try {
+      const response = await fetch(`http://localhost:4000/labOrders${queryParams}`);
       const data = await response.json();
       setLabOrders(data);
-    } else if (selectedPractitionerId !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}`
-      );
-      const data = await response.json();
-      setLabOrders(data);
-    } else if (selectedPatientId !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?patient_id=${selectedPatientId}`
-      );
-      const data = await response.json();
-      setLabOrders(data);
-    } else if (selectedDate !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?date_taken=${selectedDate}`
-      );
-      const data = await response.json();
-      setLabOrders(data);
+    } catch (error) {
+      console.error("Error fetching lab orders:", error);
     }
   };
 
   React.useEffect(() => {
-    fetchLabOrders();
+    fetchInitialData();
   }, []);
 
   React.useEffect(() => {
-    fetchLabOrdersByPractitioner();
+    fetchLabOrders();
   }, [selectedPractitionerId, selectedPatientId, selectedDate]);
 
   // {
