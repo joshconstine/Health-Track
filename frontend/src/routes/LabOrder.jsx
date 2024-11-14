@@ -53,7 +53,7 @@ const LabOrder = () => {
       setLabOrders(data);
     } else if (selectedDate !== "") {
       const response = await fetch(
-        `http://localhost:4000/labOrders?data_taken=${selectedDate}`
+        `http://localhost:4000/labOrders?date_taken=${selectedDate}`
       );
       const data = await response.json();
       setLabOrders(data);
@@ -66,7 +66,7 @@ const LabOrder = () => {
 
   React.useEffect(() => {
     fetchLabOrdersByPractitioner();
-  }, [selectedPractitionerId, selectedPatientId]);
+  }, [selectedPractitionerId, selectedPatientId, selectedDate]);
 
   // {
   //     "ID": 1,
