@@ -115,7 +115,7 @@ join employees lab_tech_employee on lab_tech.employee_id = lab_tech_employee.emp
 
   const practitionerFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId};`;
   const patientFilter = ` where l.patient_id = ${selectedPatientId};`;
-  const dateFilter = ` where l.date_taken = ${selectedDate};`;
+  const dateFilter = ` where l.date_taken = '${selectedDate}';`;
   const combinedFilter = ` where l.ordered_by_physician_id = ${selectedPractitionerId} AND l.patient_id = ${selectedPatientId} AND l.date_taken = ${selectedDate};`;
   // Try to run the query on the database
 
