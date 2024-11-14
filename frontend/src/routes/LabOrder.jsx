@@ -13,6 +13,9 @@ const LabOrder = () => {
   //selected patient
   const [selectedPatientId, setSelectedPatientId] = useState("");
 
+  //selected data
+  const [selectedDate, setSelectedDate] = useState("");
+
   const fetchLabOrders = async () => {
     const response = await fetch("http://localhost:4000/labOrders");
     const data = await response.json();
@@ -26,9 +29,13 @@ const LabOrder = () => {
   };
 
   const fetchLabOrdersByPractitioner = async () => {
-    if (selectedPatientId !== "" && selectedPractitionerId !== "") {
+    if (
+      selectedPatientId !== "" &&
+      selectedPractitionerId !== "" &&
+      selectedDate == ""
+    ) {
       const response = await fetch(
-        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}&patient_id=${selectedPatientId}`
+        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}&patient_id=${selectedPatientId}&date_taken=${selectedDate}`
       );
       const data = await response.json();
       setLabOrders(data);
@@ -44,6 +51,12 @@ const LabOrder = () => {
       );
       const data = await response.json();
       setLabOrders(data);
+    } else if (selectedDate !== "") {
+      const response = await fetch(
+        `http://localhost:4000/labOrders?data_taken=${selectedDate}`
+      );
+      const data = await response.json();
+      setLabOrders(data);
     }
   };
 
@@ -52,8 +65,8 @@ const LabOrder = () => {
   }, []);
 
   React.useEffect(() => {
-      fetchLabOrdersByPractitioner();
-      }, [selectedPractitionerId, selectedPatientId]);
+    fetchLabOrdersByPractitioner();
+  }, [selectedPractitionerId, selectedPatientId]);
 
   // {
   //     "ID": 1,
@@ -72,6 +85,7 @@ const LabOrder = () => {
     e.preventDefault();
     setSelectedPractitionerId("");
     setSelectedPatientId("");
+    setSelectedDate("");
     fetchLabOrders();
     console.log(
       "just reset the selected practitioner value and will refetch all "
@@ -112,6 +126,13 @@ const LabOrder = () => {
           </option>
         ))}
       </select>
+      <label>Date</label>
+      <input
+        type="date"
+        onChange={(e) => setSelectedDate(e.target.value)}
+        value={selectedDate}
+      />
+
       <button onClick={handleResetClick}>reset</button>
       <table>
         <thead>
