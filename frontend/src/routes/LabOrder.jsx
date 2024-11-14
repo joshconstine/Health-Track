@@ -13,7 +13,10 @@ const LabOrder = () => {
   //selected patient
   const [selectedPatientId, setSelectedPatientId] = useState("");
 
-  const fetchLabOrders = async () => {
+  //selected data
+  const [selectedDate, setSelectedDate] = useState("");
+
+  const fetchInitialData = async () => {
     const response = await fetch("http://localhost:4000/labOrders");
     const data = await response.json();
     setLabOrders(data);
@@ -25,35 +28,37 @@ const LabOrder = () => {
     setPatientOptions(data3);
   };
 
-  const fetchLabOrdersByPractitioner = async () => {
-    if (selectedPatientId !== "" && selectedPractitionerId !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}&patient_id=${selectedPatientId}`
-      );
+  // Build query parameters dynamically based on selected filters
+  const buildQueryParams = () => {
+    const params = new URLSearchParams();
+    
+    if (selectedPractitionerId) params.append("practitioner_id", selectedPractitionerId);
+    if (selectedPatientId) params.append("patient_id", selectedPatientId);
+    if (selectedDate) params.append("date_taken", selectedDate);
+
+    return params.toString() ? `?${params.toString()}` : "";
+  };
+
+  // Fetch lab orders based on selected filters
+  const fetchLabOrders = async () => {
+    const queryParams = buildQueryParams();
+
+    try {
+      const response = await fetch(`http://localhost:4000/labOrders${queryParams}`);
       const data = await response.json();
       setLabOrders(data);
-    } else if (selectedPractitionerId !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?practitioner_id=${selectedPractitionerId}`
-      );
-      const data = await response.json();
-      setLabOrders(data);
-    } else if (selectedPatientId !== "") {
-      const response = await fetch(
-        `http://localhost:4000/labOrders?patient_id=${selectedPatientId}`
-      );
-      const data = await response.json();
-      setLabOrders(data);
+    } catch (error) {
+      console.error("Error fetching lab orders:", error);
     }
   };
 
   React.useEffect(() => {
-    fetchLabOrders();
+    fetchInitialData();
   }, []);
 
   React.useEffect(() => {
-      fetchLabOrdersByPractitioner();
-      }, [selectedPractitionerId, selectedPatientId]);
+    fetchLabOrders();
+  }, [selectedPractitionerId, selectedPatientId, selectedDate]);
 
   // {
   //     "ID": 1,
@@ -72,6 +77,7 @@ const LabOrder = () => {
     e.preventDefault();
     setSelectedPractitionerId("");
     setSelectedPatientId("");
+    setSelectedDate("");
     fetchLabOrders();
     console.log(
       "just reset the selected practitioner value and will refetch all "
@@ -112,6 +118,13 @@ const LabOrder = () => {
           </option>
         ))}
       </select>
+      <label>Date</label>
+      <input
+        type="date"
+        onChange={(e) => setSelectedDate(e.target.value)}
+        value={selectedDate}
+      />
+
       <button onClick={handleResetClick}>reset</button>
       <table>
         <thead>
