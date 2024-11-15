@@ -13,8 +13,11 @@ const LabOrder = () => {
   //selected patient
   const [selectedPatientId, setSelectedPatientId] = useState("");
 
-  //selected data
-  const [selectedDate, setSelectedDate] = useState("");
+  //selected ordered date
+  const [selectedOrderDate, setSelectedOrderDate] = useState("");
+
+  //selected taken date
+  const [selectedTakenDate, setSelectedTakenDate] = useState("");
 
   const fetchInitialData = async () => {
     const response = await fetch("http://localhost:4000/labOrders");
@@ -31,8 +34,9 @@ const LabOrder = () => {
   // Build query parameters dynamically based on selected filters
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    
-    if (selectedPractitionerId) params.append("practitioner_id", selectedPractitionerId);
+
+    if (selectedPractitionerId)
+      params.append("practitioner_id", selectedPractitionerId);
     if (selectedPatientId) params.append("patient_id", selectedPatientId);
     if (selectedDate) params.append("date_taken", selectedDate);
 
@@ -43,7 +47,9 @@ const LabOrder = () => {
     const queryParams = buildQueryParams();
 
     try {
-      const response = await fetch(`http://localhost:4000/labOrders${queryParams}`);
+      const response = await fetch(
+        `http://localhost:4000/labOrders${queryParams}`
+      );
       const data = await response.json();
       setLabOrders(data);
     } catch (error) {
@@ -57,7 +63,12 @@ const LabOrder = () => {
 
   React.useEffect(() => {
     fetchLabOrders();
-  }, [selectedPractitionerId, selectedPatientId, selectedDate]);
+  }, [
+    selectedPractitionerId,
+    selectedPatientId,
+    selectedOrderDate,
+    selectedTakenDate,
+  ]);
 
   // {
   //     "ID": 1,
@@ -76,7 +87,8 @@ const LabOrder = () => {
     e.preventDefault();
     setSelectedPractitionerId("");
     setSelectedPatientId("");
-    setSelectedDate("");
+    setSelectedOrderDate("");
+    setSelectedTakenDate("");
     fetchLabOrders();
     console.log(
       "just reset the selected practitioner value and will refetch all "
@@ -117,11 +129,17 @@ const LabOrder = () => {
           </option>
         ))}
       </select>
-      <label>Date</label>
+      <label>Date Ordered</label>
       <input
         type="date"
-        onChange={(e) => setSelectedDate(e.target.value)}
-        value={selectedDate}
+        onChange={(e) => setSelectedOrderDate(e.target.value)}
+        value={selectedOrderDate}
+      />
+      <label>Date Taken</label>
+      <input
+        type="date"
+        onChange={(e) => setSelectedTakenDate(e.target.value)}
+        value={selectedTakenDate}
       />
 
       <button onClick={handleResetClick}>reset</button>
@@ -132,7 +150,8 @@ const LabOrder = () => {
             <th>Patient Name</th>
             <th>Physician Name</th>
             <th>Lab Order Name</th>
-            <th>Lab Date</th>
+            <th>Lab Order Date</th>
+            <th>Lab Taken Date</th>
             <th>Lab Technician</th>
             <th>Results</th>
           </tr>
@@ -152,6 +171,7 @@ const LabOrder = () => {
                 </Link>
               </td>
               <td>{labOrder.name}</td>
+              <td>{labOrder.date_ordered}</td>
               <td>{labOrder.date_taken}</td>
               <td>
                 <Link to={`/practitioners/${labOrder.lab_technician_id}`}>

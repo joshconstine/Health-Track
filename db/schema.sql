@@ -104,6 +104,7 @@ CREATE TABLE lab_orders (
     appointment_id INTEGER,
     lab_technician_id INTEGER,
     measured_value DECIMAL(10,2),
+    date_ordered DATE,
     date_taken DATE
 );
 
