@@ -38,7 +38,8 @@ const LabOrder = () => {
     if (selectedPractitionerId)
       params.append("practitioner_id", selectedPractitionerId);
     if (selectedPatientId) params.append("patient_id", selectedPatientId);
-    if (selectedDate) params.append("date_taken", selectedDate);
+    if (selectedOrderDate) params.append("date_ordered", selectedOrderDate);
+    if (selectedTakenDate) params.append("date_taken", selectedTakenDate);
 
     return params.toString() ? `?${params.toString()}` : "";
   };
