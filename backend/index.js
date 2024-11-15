@@ -144,6 +144,7 @@ app.get("/labOrders", (req, res) => {
       if (err) throw err;
       //return date in the format yyyy-mm-dd
       rows.forEach((row) => {
+        row.date_ordered = row.date_ordered.toISOString().split("T")[0];
         row.date_taken = row.date_taken.toISOString().split("T")[0];
       });
       res.json(rows);
