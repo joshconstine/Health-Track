@@ -20,6 +20,7 @@ import Practitioners from "./routes/Practitioners";
 import Patient from "./routes/Patient";
 import Equipment from "./routes/Equipment";
 import CreateAppointment from "./routes/CreateAppointment";
+import Register from "./routes/Register";
 import './App.css';
 
 const router = createBrowserRouter([
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/Register",
+        element: <Register />
+      },
       {
         path: "/",
         element: <Practitioners />
@@ -87,8 +92,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <RouterProvider router={router} />
   </React.StrictMode>
 );
-
-
 
 function Layout() {
   return (
