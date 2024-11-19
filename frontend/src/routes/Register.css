@@ -6,12 +6,6 @@
     box-sizing: border-box;
 }
 
-html {
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
-    color: #fff;
-}
-
 body {
     min-height: 100vh;
     background-color: dodgerblue;
@@ -37,17 +31,27 @@ section {
     background-color: rgba(0,0,0,0.4);
 }
 
-form {
+.register-form {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    flex-grow: 1;
-    padding-bottom: 1rem;
-}
+    width: 300px;
+  }
 
-a, a:visited {
+  .register-button {
+    padding: 10px;
+    font-size: 16px;
     color: #fff;
-}
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 3rem;
+    margin-top: 2rem;
+  }
+
+/* a, a:visited {
+    color: #fff;
+} */
 
 input[type="text"],
 input[type="password"],
@@ -112,3 +116,15 @@ button {
 .line {
     display: inline-block;
 }
+
+.login-link {
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    text-align: center;
+  }

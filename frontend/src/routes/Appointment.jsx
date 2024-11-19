@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './Appointment.css';
 import { useEffect, useState } from 'react';
-import AppointmentActions from '../components/AppointmentActions';
 import { useParams } from 'react-router-dom';
+import AppointmentActions from '../components/AppointmentActions';
+import './Appointment.css';
 const Appointment = () => {
   const params = useParams();
   const id = params.id;

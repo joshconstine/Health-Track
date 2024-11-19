@@ -1,19 +1,21 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import './Navbar.css';
-import {
-  Link
-} from "react-router-dom";
-const Navbar = () => {
+
+const Navbar = ({ isLoggedIn, handleLogout }) => {
   return (
     <nav className='App-header'>
-          <Link class='link' id='homeLink' to="/">Practitioners</Link>
-          <Link class='link' to="/patients">Patients</Link>
-          <Link class='link' to="/appointments">Appointments</Link>
-          <Link class='link' to="/orders">Lab order tracking</Link>
-          <Link class='link' to="/InsuranceCarriers">Insurance Carriers</Link>
-          <Link class='link' to="/equipment">Equipment Inventory</Link>
-          <Link class='link' to="/Register">Register/Login</Link>
-
+          <Link className='link' id='homeLink' to="/">Practitioners</Link>
+          <Link className='link' to="/patients">Patients</Link>
+          <Link className='link' to="/appointments">Appointments</Link>
+          <Link className='link' to="/orders">Lab order tracking</Link>
+          <Link className='link' to="/InsuranceCarriers">Insurance Carriers</Link>
+          <Link className='link' to="/equipment">Equipment Inventory</Link>
+          {isLoggedIn ? (
+            <Link className="link" to="/Login" onClick={handleLogout}>Logout</Link>
+          ) : (
+            <Link className='link' to="/Login">Login</Link>
+          )}
     </nav>
   );
 };
