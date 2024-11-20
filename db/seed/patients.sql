@@ -85,16 +85,16 @@ INSERT INTO invoice_provided_billable_services (invoice_id, provided_billable_se
 (4, 4), -- Provided billable service for invoice 4
 (5, 5); -- Provided billable service for invoice 5
 -- Insert Lab Orders
-INSERT INTO lab_orders (id, patient_id, ordered_by_physician_id, lab_test_type_id, appointment_id, lab_technician_id, measured_value, date_taken) VALUES
-(1, 1, 1, 1, 1, 19, 12.5, '2023-01-05'), -- Lab order for patient 1
-(2, 2, 2, 2, 2, 20, 15.0, '2023-02-10'), -- Lab order for patient 2
-(3, 3, 3, 3, 3, 19, 18.5, '2023-03-15'), -- Lab order for patient 3
-(4, 4, 4, 2, 4, 20, 11.5, '2023-04-20'), -- Lab order for patient 4
-(5, 5, 5, 3, 5, 19, 14.0, '2023-05-25'), -- Lab order for patient 5
-(6, 1, 1, 1, 1, 19, 12.5, '2023-01-05'), -- Lab order for patient 1
-(7, 2, 2, 2, 2, 19, 15.0, '2023-02-10'), -- Lab order for patient 2
-(8, 3, 3, 3, 3, 19, 18.5, '2023-03-15'), -- Lab order for patient 3
-(9, 4, 4, 2, 4, 20, 11.5, '2023-04-20'), -- Lab order for patient 4
-(10, 5, 5, 3, 5, 20, 14.0, '2023-05-25'); --
+INSERT INTO lab_orders (id, patient_id, ordered_by_physician_id, lab_test_type_id, appointment_id, lab_technician_id, measured_value, date_ordered, date_taken) VALUES
+(1, 1, 1, 1, 1, 19, 12.5, '2023-01-03', '2023-01-05'), -- Lab order for patient 1
+(2, 2, 2, 2, 2, 20, 15.0, '2023-01-30', '2023-02-10'), -- Lab order for patient 2
+(3, 3, 3, 3, 3, 19, 18.5, '2023-03-08', '2023-03-15'), -- Lab order for patient 3
+(4, 4, 4, 2, 4, 20, 11.5, '2023-04-18', '2023-04-20'), -- Lab order for patient 4
+(5, 5, 5, 3, 5, 19, 14.0, '2023-05-20', '2023-05-25'), -- Lab order for patient 5
+(6, 1, 1, 1, 1, 19, 12.5, '2023-01-02', '2023-01-05'), -- Lab order for patient 1
+(7, 2, 2, 2, 2, 19, 15.0, '2023-02-04', '2023-02-10'), -- Lab order for patient 2
+(8, 3, 3, 3, 3, 19, 18.5, '2023-03-01', '2023-03-15'), -- Lab order for patient 3
+(9, 4, 4, 2, 4, 20, 11.5, '2023-04-17', '2023-04-20'), -- Lab order for patient 4
+(10, 5, 5, 3, 5, 20, 14.0, '2023-05-21', '2023-05-25'); --
 
 UPDATE provided_billable_services SET invoice_id  = 1;

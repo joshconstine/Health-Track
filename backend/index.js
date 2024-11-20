@@ -192,7 +192,8 @@ app.get('/patients', (req, res) => {
 app.get('/labOrders', (req, res) => {
   const selectedPractitionerId = req.query.practitioner_id || null;
   const selectedPatientId = req.query.patient_id || null;
-  const selectedDate = req.query.date_taken || null;
+  const selectedOrderDate = req.query.date_ordered || null;
+  const selectedTakenDate = req.query.date_taken || null;
 
   // Base query
   let query = `
@@ -204,6 +205,7 @@ app.get('/labOrders', (req, res) => {
       l.appointment_id,
       l.lab_technician_id,
       l.measured_value,
+      l.date_ordered,
       l.date_taken,
       CONCAT(p.first_name, ' ', p.last_name) AS patient_name,
       CONCAT(orderd_by_employee.first_name, ' ', orderd_by_employee.last_name) AS practitioner_name,
@@ -229,8 +231,11 @@ app.get('/labOrders', (req, res) => {
   if (selectedPatientId) {
     filters.push(`l.patient_id = ${connection.escape(selectedPatientId)}`);
   }
-  if (selectedDate) {
-    filters.push(`l.date_taken = ${connection.escape(selectedDate)}`);
+  if (selectedOrderDate) {
+    filters.push(`l.date_ordered = ${connection.escape(selectedOrderDate)}`);
+  }
+  if (selectedTakenDate) {
+    filters.push(`l.date_taken = ${connection.escape(selectedTakenDate)}`);
   }
 
   // If there are any filters, append them to the query
@@ -244,7 +249,11 @@ app.get('/labOrders', (req, res) => {
       if (err) throw err;
       //return date in the format yyyy-mm-dd
       rows.forEach((row) => {
-        row.date_taken = row.date_taken.toISOString().split('T')[0];
+
+        row.date_ordered = row.date_ordered.toISOString().split("T")[0];
+        row.date_taken = row.date_taken.toISOString().split("T")[0];
+
+       
       });
       res.json(rows);
     });
@@ -254,7 +263,9 @@ app.get('/labOrders', (req, res) => {
   }
 });
 
-app.get('/patients/:id', (req, res) => {
+
+app.get("/patients/:id", (req, res) => {
+
   try {
     connection.query(
       `
