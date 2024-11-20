@@ -1,0 +1,13 @@
+.EquipmentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+}
+.EquipmentBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #5195C2 ;
+    padding: 10px;
+}

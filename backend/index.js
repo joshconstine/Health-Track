@@ -1,20 +1,23 @@
 // backend/index.js
-const checkForTimeblockOverlap = require("./helpers/checkForTimeblockOverlap");
-const express = require("express");
-const cors = require("cors");
-const mysql = require("mysql2");
-const { TZDate } = require("@date-fns/tz");
+const checkForTimeblockOverlap = require('./helpers/checkForTimeblockOverlap');
+const express = require('express');
+const cors = require('cors');
+const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
+const { TZDate } = require('@date-fns/tz');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 const connection = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: "root",
-  password: "password",
-  database: "health",
+  host: process.env.DB_HOST || 'localhost',
+  user: 'root',
+  password: 'password',
+  database: 'health',
   port: 3306,
   multipleStatements: true,
-  timezone: "Z",
+  timezone: 'Z',
 });
 
 connection.connect();
@@ -24,28 +27,130 @@ connection.connect();
 //   console.log('The solution is: ', rows[0].solution)
 // })
 
-app.use(cors());
-app.use(express.json());
+const SECRET_KEY = 'secret'; // Eventually replace with a strong secret we should put this into an .env
 
-app.get("/", (req, res) => {
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // Frontend URL
+    credentials: true, // Allow sending cookies with requests
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+
+// Middleware to verify JWT
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.auth_token;
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded; // Attach user info to the request
+    next();
+  } catch (err) {
+    res.status(403).json({ error: 'Invalid or expired token' });
+  }
+};
+
+app.get('/', (req, res) => {
   res.json([
     {
-      id: "1",
-      title: "Book Review: The Name of the Wind",
+      id: '1',
+      title: 'Book Review: The Name of the Wind',
     },
     {
-      id: "2",
-      title: "Game Review: Pokemon Brillian Diamond",
+      id: '2',
+      title: 'Game Review: Pokemon Brillian Diamond',
     },
     {
-      id: "3",
-      title: "Show Review: Alice in Borderland",
+      id: '3',
+      title: 'Show Review: Alice in Borderland',
     },
   ]);
 });
 
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: 'Username and password are required' });
+  }
+
+  const query = `
+    SELECT 
+      uc.employee_id, 
+      e.first_name, 
+      e.last_name, 
+      pt.name AS employee_type, 
+      uc.password_hash
+    FROM 
+      user_credentials uc
+    JOIN 
+      employees e ON uc.employee_id = e.employee_id
+    LEFT JOIN 
+      practitioners p ON e.employee_id = p.employee_id
+    LEFT JOIN 
+      practitioner_types pt ON p.practitioner_type_id = pt.id
+    WHERE 
+      uc.username = ? AND uc.is_active = 1
+  `;
+  try {
+    connection.query(query, [username], async (err, rows) => {
+      if (err) {
+        console.error('Error during login query', err);
+        return res.status(500).json({ error: 'Server error' });
+      }
+
+      if (rows.length === 0) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+      }
+
+      const user = rows[0];
+
+      // Verify the password
+      const passwordMatch = await bcrypt.compare(password, user.password_hash);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+      }
+
+      // Successful login
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { employee_id: user.employee_id, employee_type: user.employee_type },
+        SECRET_KEY,
+        { expiresIn: '1h' } // Token expires in 1 hour
+      );
+      // Send the token as an HTTP-only cookie
+      res
+        .cookie('auth_token', token, {
+          httpOnly: true, // Prevent access via JavaScript
+          secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
+          sameSite: 'Strict', // Protect against CSRF
+          path: '/', // Make cookie available for the entire site
+        })
+        .json({
+          message: 'Login successful',
+          employee_id: user.employee_id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          employee_type: user.employee_type || 'General Employee', // Default if no specific type
+        });
+    });
+  } catch (error) {
+    console.error('Error during login', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('auth_token').json({ message: 'Logged out successfully' });
+});
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get("/patients", (req, res) => {
+app.get('/patients', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -79,12 +184,12 @@ app.get("/patients", (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get("/labOrders", (req, res) => {
+app.get('/labOrders', (req, res) => {
   const selectedPractitionerId = req.query.practitioner_id || null;
   const selectedPatientId = req.query.patient_id || null;
   const selectedOrderDate = req.query.date_ordered || null;
@@ -135,7 +240,7 @@ app.get("/labOrders", (req, res) => {
 
   // If there are any filters, append them to the query
   if (filters.length > 0) {
-    query += " WHERE " + filters.join(" AND ");
+    query += ' WHERE ' + filters.join(' AND ');
   }
 
   // Run the query
@@ -144,18 +249,23 @@ app.get("/labOrders", (req, res) => {
       if (err) throw err;
       //return date in the format yyyy-mm-dd
       rows.forEach((row) => {
+
         row.date_ordered = row.date_ordered.toISOString().split("T")[0];
         row.date_taken = row.date_taken.toISOString().split("T")[0];
+
+       
       });
       res.json(rows);
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 
+
 app.get("/patients/:id", (req, res) => {
+
   try {
     connection.query(
       `
@@ -184,7 +294,7 @@ SELECT p.id
     console.log(error);
   }
 });
-app.get("/patients/:id/prescriptions", (req, res) => {
+app.get('/patients/:id/prescriptions', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -217,10 +327,10 @@ where p.patient_id = ${req.params.id}
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
-app.get("/patients/:id/medicalEncounters", (req, res) => {
+app.get('/patients/:id/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `select m.id
@@ -259,11 +369,11 @@ app.get("/patients/:id/medicalEncounters", (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get("/practitioners", (req, res) => {
+app.get('/practitioners', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -301,11 +411,11 @@ app.get("/practitioners", (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 
-app.get("/practitioners/:id", (req, res) => {
+app.get('/practitioners/:id', (req, res) => {
   try {
     connection.query(
       `
@@ -336,7 +446,7 @@ app.get("/practitioners/:id", (req, res) => {
     console.log(error);
   }
 });
-app.get("/practitioners/:id/appointments", (req, res) => {
+app.get('/practitioners/:id/appointments', (req, res) => {
   try {
     connection.query(
       `
@@ -370,8 +480,60 @@ where pr.id = ${req.params.id}
   }
 });
 
+app.get('/labTestTypes', (req, res) => {
+  try {
+    connection.query(
+      'select id, name, description, lower_bound, upper_bound from lab_test_types',
+      (err, rows, fields) => {
+        if (err) throw err;
+
+        res.json(rows);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post('/labOrders', (req, res) => {
+  const {
+    appointment_id,
+    lab_test_type_id,
+    patient_id,
+    ordered_by_physician_id,
+  } = req.body;
+
+  const query = `INSERT INTO lab_orders (appointment_id, lab_test_type_id, patient_id, ordered_by_physician_id) VALUES (${appointment_id}, ${lab_test_type_id}, ${patient_id}, ${ordered_by_physician_id})`;
+
+  try {
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+
+      res.json({ success: true });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post('/providedBillableServices', (req, res) => {
+  const { appointment_id, billable_service_id, patient_id } = req.body;
+
+  const query = `INSERT INTO provided_billable_services (appointment_id, billable_service_id, patient_id) VALUES (${appointment_id}, ${billable_service_id}, ${patient_id})`;
+
+  try {
+    connection.query(query, (err, rows) => {
+      if (err) throw err;
+
+      res.json({ success: true });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get("/medicalEncounters", (req, res) => {
+app.get('/medicalEncounters', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `select distinct m.id
@@ -408,12 +570,12 @@ app.get("/medicalEncounters", (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 
 // This sets up an API endpoint '/practitioners' that will respond to GET requests.
-app.get("/practitioners", (req, res) => {
+app.get('/practitioners', (req, res) => {
   // Define the SQL query that selects first and last names from the employees table
   // and gets their practitioner type from the practitioner_types table.
   const query = `
@@ -442,11 +604,11 @@ app.get("/practitioners", (req, res) => {
     // If there's an error in running the query or connecting to the database,
     // log the error and send a 500 status (server error) to the client.
     console.log(error);
-    res.status(500).send("Server error");
+    res.status(500).send('Server error');
   }
 });
 
-app.get("/appointments", (req, res) => {
+app.get('/appointments', (req, res) => {
   const queryA = `select a.id
      , DATE_FORMAT(pt.start_time, '%Y-%m-%d') AS appointment_date
      , DATE_FORMAT(pt.start_time, '%H:%i:%s') As appointment_time
@@ -474,12 +636,13 @@ from appointments a
   }
 });
 
-app.get("/appointments/:id", (req, res) => {
+app.get('/appointments/:id', (req, res) => {
   try {
     connection.query(
       `select a.id
 ,p.first_name
 ,p.last_name
+, p.id as patient_id
 ,at.name
 ,prty.name
 ,e.first_name
@@ -488,6 +651,7 @@ app.get("/appointments/:id", (req, res) => {
 ,e.phone_number
 ,prt.start_time
 ,prt.end_time
+, pr.id as practitioner_id
 ,ic.name
 from appointments a
 join appointment_types at on a.appointment_type_id = at.id
@@ -509,7 +673,7 @@ where a.id = ${req.params.id}
   }
 });
 
-app.get("/appointments/:id/billableServices", (req, res) => {
+app.get('/appointments/:id/billableServices', (req, res) => {
   try {
     connection.query(
       `select bs.description
@@ -527,7 +691,7 @@ where pbs.appointment_id = ${req.params.id};`,
   }
 });
 
-app.get("/appointments/:id/labOrders", (req, res) => {
+app.get('/appointments/:id/labOrders', (req, res) => {
   try {
     connection.query(
       `select ltt.name
@@ -537,8 +701,8 @@ app.get("/appointments/:id/labOrders", (req, res) => {
 , CONCAT(e.first_name, ' ', e.last_name) as lab_technician_name
 from lab_orders lo
 join lab_test_types ltt on lo.lab_test_type_id = ltt.id
-join practitioners pr on lo.lab_technician_id = pr.id
-join employees e on pr.employee_id = e.employee_id
+left join practitioners pr on lo.lab_technician_id = pr.id
+left join employees e on pr.employee_id = e.employee_id
 where lo.appointment_id = ${req.params.id};`,
       (err, rows, fields) => {
         res.json(rows);
@@ -549,10 +713,10 @@ where lo.appointment_id = ${req.params.id};`,
   }
 });
 
-app.get("/insuranceCarriers", (req, res) => {
+app.get('/insuranceCarriers', (req, res) => {
   try {
     connection.query(
-      "select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;",
+      'select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id;',
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -564,7 +728,7 @@ app.get("/insuranceCarriers", (req, res) => {
   }
 });
 
-app.get("/insuranceCarriers/:id", (req, res) => {
+app.get('/insuranceCarriers/:id', (req, res) => {
   try {
     connection.query(
       `select ic.id, ic.name, ic.address,cs.name as status_name from insurance_carrier ic join carrier_status cs on ic.carrier_status_id = cs.id where ic.id = ${req.params.id}`,
@@ -579,7 +743,7 @@ app.get("/insuranceCarriers/:id", (req, res) => {
   }
 });
 
-app.get("/insuranceCarriers/:id/invoices", (req, res) => {
+app.get('/insuranceCarriers/:id/invoices', (req, res) => {
   try {
     connection.query(
       `select i.id
@@ -605,10 +769,10 @@ where ic.id =  ${req.params.id}
     console.log(error);
   }
 });
-app.get("/billableServices", (req, res) => {
+app.get('/billableServices', (req, res) => {
   try {
     connection.query(
-      "select bs.id, bs.name,bs.cost from billable_services bs",
+      'select bs.id, bs.name,bs.cost from billable_services bs',
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -619,10 +783,10 @@ app.get("/billableServices", (req, res) => {
     console.log(error);
   }
 });
-app.get("/appointmentTypes", (req, res) => {
+app.get('/appointmentTypes', (req, res) => {
   try {
     connection.query(
-      "select id, name from appointment_types",
+      'select id, name from appointment_types',
       (err, rows, fields) => {
         if (err) throw err;
 
@@ -635,12 +799,12 @@ app.get("/appointmentTypes", (req, res) => {
 });
 // Utility function for handling errors and rolling back transactions
 function handleQueryError(err, res, connection, message) {
-  console.log("error", err);
+  console.log('error', err);
   return connection.rollback(() => {
     return res.status(500).json({ error: message, details: err });
   });
 }
-app.get("/equipment", (req, res) => {
+app.get('/equipment', (req, res) => {
   try {
     connection.query(
       `
@@ -663,7 +827,7 @@ JOIN equipment_status es ON e.equipment_status_id = es.id
   }
 });
 
-app.get("/equipment/:id", (req, res) => {
+app.get('/equipment/:id', (req, res) => {
   try {
     connection.query(
       `
@@ -690,7 +854,7 @@ WHERE e.id = ${req.params.id}
   }
 });
 
-app.get("/equipment/:id/maintenance", (req, res) => {
+app.get('/equipment/:id/maintenance', (req, res) => {
   try {
     connection.query(
       `
@@ -713,15 +877,16 @@ WHERE e.id = ${req.params.id}
   }
 });
 
-app.post("/appointments", (req, res) => {
+app.post('/appointments', (req, res) => {
+  console.log('post broken?');
   const { appointment_date, appointment_type_id, practitioner_id, patient_id } =
     req.body;
   const newStartTime = new TZDate(appointment_date);
   const newEndTime = new TZDate(
     new Date(appointment_date).setHours(newStartTime.getHours() + 1)
   );
-  const dbDate = newStartTime.toISOString().slice(0, 19).replace("T", " ");
-  const dbEndTime = newEndTime.toISOString().slice(0, 19).replace("T", " ");
+  const dbDate = newStartTime.toISOString().slice(0, 19).replace('T', ' ');
+  const dbEndTime = newEndTime.toISOString().slice(0, 19).replace('T', ' ');
 
   const existingPractitionerTimeblocksQuery = `SELECT * FROM practitioner_timeblocks WHERE practitioner_id = ? FOR UPDATE`;
 
@@ -729,7 +894,7 @@ app.post("/appointments", (req, res) => {
     if (err)
       return res
         .status(500)
-        .json({ error: "Transaction start error", details: err });
+        .json({ error: 'Transaction start error', details: err });
 
     connection.query(
       existingPractitionerTimeblocksQuery,
@@ -737,7 +902,7 @@ app.post("/appointments", (req, res) => {
       (err, existingTimeblocks) => {
         if (err)
           return res.status(500).json({
-            error: "Error fetching existing timeblocks",
+            error: 'Error fetching existing timeblocks',
             details: err,
           });
 
@@ -746,8 +911,8 @@ app.post("/appointments", (req, res) => {
           checkForTimeblockOverlap(existingTimeblocks, newStartTime, newEndTime)
         ) {
           return res.status(400).json({
-            error: "Timeblock overlap",
-            details: "Practitioner already has an appointment at this time",
+            error: 'Timeblock overlap',
+            details: 'Practitioner already has an appointment at this time',
           });
         }
 
@@ -786,7 +951,7 @@ function insertTimeblock(
           err,
           res,
           connection,
-          "Error inserting timeblock"
+          'Error inserting timeblock'
         );
 
       const practitioner_timeblock_id = result.insertId;
@@ -819,7 +984,7 @@ function insertAppointment(
           err,
           res,
           connection,
-          "Error inserting appointment"
+          'Error inserting appointment'
         );
 
       const appointment_id = result.insertId;
@@ -850,7 +1015,7 @@ function updateTimeblockWithAppointment(
           err,
           res,
           connection,
-          "Error updating timeblock"
+          'Error updating timeblock'
         );
 
       connection.commit((err) => {
@@ -859,10 +1024,10 @@ function updateTimeblockWithAppointment(
             err,
             res,
             connection,
-            "Transaction commit error"
+            'Transaction commit error'
           );
         res.json({
-          message: "Appointment created successfully",
+          message: 'Appointment created successfully',
           appointment_id,
         });
       });
@@ -872,9 +1037,9 @@ function updateTimeblockWithAppointment(
 
 //404 page
 app.use((req, res) => {
-  res.status(404).send("404 page not found");
+  res.status(404).send('404 page not found');
 });
 
 app.listen(4000, () => {
-  console.log("listening for requests on port 4000");
+  console.log('listening for requests on port 4000');
 });

@@ -1,8 +1,9 @@
 import React from 'react';
 
-import './Appointment.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import AppointmentActions from '../components/AppointmentActions';
+import './Appointment.css';
 const Appointment = () => {
   const params = useParams();
   const id = params.id;
@@ -32,6 +33,12 @@ const Appointment = () => {
   }, []);
   return (
     <div className='AppointmentContainer'>
+      <AppointmentActions AppointmentID={id} 
+      PatientID={appointment.patient_id}
+      AppointmentPhysicianID={appointment.practitioner_id}
+      Refetch={fetchAppointment}
+
+      />
     <div className='AppointmentBody'>
       <div className='AppointmentDetail'>
         <h1>Appointment {appointment.id}</h1>

@@ -272,6 +272,19 @@ CREATE TABLE equipment_status (
     name VARCHAR(50) NOT NULL
 );
 
+-- User Logins
+
+CREATE TABLE user_credentials (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    employee_id INTEGER NOT NULL,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE NOT NULL,
+    FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
+);
+
 -- Alter Table for Foreign Keys
 
 -- Patients
@@ -408,4 +421,5 @@ ADD CONSTRAINT fk_equipment_maintenance_equipment_id
 FOREIGN KEY (equipment_id) REFERENCES equipment(id),
 ADD CONSTRAINT fk_equipment_maintenance_problem_type_id
 FOREIGN KEY (equipment_problem_type_id) REFERENCES equipment_problem_types(id);
+
 
