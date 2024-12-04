@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const { TZDate } = require('@date-fns/tz');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const { Parser } = require('json2csv');
 
 const app = express();
 
@@ -287,8 +288,23 @@ SELECT p.id
  where p.id = ${req.params.id}
   `,
       (err, rows, fields) => {
+        dt = req.query  .dataType;
+        console.log(dt);
+        if (dt === 'csv') { 
+         // Convert the data to CSV
+         const json2csvParser = new Parser();
+         const csv = json2csvParser.parse(rows);
+ 
+         // Set the appropriate headers for file download
+         res.header('Content-Type', 'text/csv');
+         res.header('Content-Disposition', `attachment; filename=patient_${req.params.id}.csv`);
+ 
+         // Send the CSV file
+         res.send(csv);
+      } else {
         res.json(rows[0]);
       }
+      } 
     );
   } catch (error) {
     console.log(error);

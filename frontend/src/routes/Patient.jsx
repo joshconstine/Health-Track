@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './Appointment.css';
+import { bg } from 'date-fns/locale';
 const Patient = () => {
   const params = useParams();
   const id = params.id;
@@ -29,12 +30,42 @@ const Patient = () => {
   useEffect(() => {
     fetchPatient(id);
   }, [])
-
+  const downloadUserData = async () => {
+    const response = await fetch(`http://localhost:4000/patients/${id}?dataType=csv`);
+    
+    // Get the response as text (CSV format)
+    const data = await response.text();
+  
+    // Create a Blob with the CSV data
+    const element = document.createElement('a');
+    const file = new Blob([data], { type: 'text/csv' });  // Use 'text/csv' for CSV files
+    element.href = URL.createObjectURL(file);
+    
+    // Set the download attribute with the filename
+    element.download = `patient_${id}.csv`;
+    
+    // Append the element to the body, trigger the click event, and remove it
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);  // Clean up by removing the element after download
+  }
+  
   return (
     <div className='AppointmentContainer'>
     <div className='AppointmentBody'>
       <div className='AppointmentDetail'>
         <h1>Patient {patient.id}</h1>
+        <button onClick={downloadUserData} 
+           style={{
+            backgroundColor: '#3b82f6', // blue-500
+            color: 'white',
+            fontWeight: '600', // semi-bold
+            padding: '0.5rem 1rem', // py-2 px-4
+            borderRadius: '0.5rem', // rounded-lg
+            cursor: 'pointer',
+            transition: 'background-color 0.3s, transform 0.3s',
+          }}
+        >export data</button>
           <p>{patient.name}</p>
             <p>{patient.phone_number}</p>
             <p>{patient.address}</p>
